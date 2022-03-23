@@ -1,0 +1,6 @@
+,currentmonth,currentyear,section_no,district_no,borough,st_rate_avg,st_count,st_count_accept,st_count_filthy,st_count_rated,sw_rate_avg,sw_count,sw_count_accept,sw_count_filthy,sw_count_rated
+0,11,2021,BKN172,BKN17,Brooklyn,1.2328124999999996,16,16,0,16,1.2421874999999996,16,15,0,16
+1,11,2021,QE126,QE12,Queens,,0,0,0,0,,0,0,0,0
+2,11,2021,QW012,QW01,Queens,1.2115384615384612,13,13,0,13,1.2403846153846152,13,12,0,13
+3,11,2021,QW041,QW04,Queens,1.275,14,12,0,14,1.239583333333333,12,12,0,12
+4,11,2021,QW043,QW04,Queens,1.2699999999999998,20,17,0,20,1.227631578947368,19,18,0,19
