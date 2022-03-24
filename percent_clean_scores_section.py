@@ -6,18 +6,25 @@ import pandas as pd
 import numpy as np
 
 from pandas import testing
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 pd.options.mode.chained_assignment = None
-def scout_v2_fulcrum_export_cpr(fd, yyyy, mm):
+
+#formerly know as scout_v2_fulcrum_export_cpr in SQL
+def scorecard_sections(fd, yyyy, mm, is_one_month):
     #print(f"fulcrum data info:")
     #print(fd.info())
-    fd = load_fulcrum_data(fd, yyyy, mm)
-    this_agg = aggregate(fd, 'section')
+    
+    fd = load_fulcrum_data(fd, yyyy, mm, is_one_month)
+    this_agg = aggregate(fd)
     a = merge_linear_miles(this_agg)
     a = rating_calculation(a)
     a = merge_district(a)
     answer = final_format(a)
     return answer
+#for multimonth
+
 
 def mean_calc(one, two, three, four):
     zero_if_null = lambda x: 0 if pd.isna(x) else x
@@ -28,14 +35,23 @@ def mean_calc(one, two, three, four):
 
 
     
-def load_fulcrum_data(fd, yyyy, mm):
+def load_fulcrum_data(fd, yyyy, mm, is_one_month):
     #fd for fulcrum data, same as sql
     #print(fd.info())
     fd['my_date'] = pd.to_datetime(fd['_updated_at'], format='%Y-%m')
     #pad_month = (lambda x : ('0' + str(x)) if len(str(int(x))) == 1 else str(x))
     #current month is an int #print(type(fd['currentmonth'][0]))
     #select by this month result is 100 rows in test.
-    fd = fd.loc[(fd['my_date'] == f'{yyyy}-{mm}') & (fd['currentmonth'] == mm) & (fd['currentyear'] == yyyy)]
+    if (is_one_month):
+        #aren't these and statements the same?
+        fd = fd.loc[(fd['my_date'] == f'{yyyy}-{mm}') & (fd['currentmonth'] == mm) & (fd['currentyear'] == yyyy)]
+    else:
+        #if not one month, than this month and the previous two months,making three months.
+        #staring with the last day of the month, three months ago is actuall the first day of two months ago. 
+        #so September 1st to November 31st
+        three_months_ago_date = datetime.strptime(f'{yyyy}-{mm}', '%Y-%m') - relativedelta(months=2)
+        fd = fd.loc[(fd['my_date'] >= three_months_ago_date) & (fd['my_date'] <= f'{yyyy}-{mm}')]
+
     print(f"current months: {set(fd['currentmonth'])}, current years: {set(fd['currentyear'])}")
     fd['st_mean'] = None
     fd['sw_mean'] = None
@@ -92,11 +108,9 @@ def load_fulcrum_data(fd, yyyy, mm):
     fd.to_csv('fd_pre_aggregate.csv')
     return fd
 
-def aggregate(fd, level_of_agg):
-    if (level_of_agg == 'section') :
-        groupby_list = ['currentmonth', 'currentyear','section_no', 'district_no','borough']
-    else:
-        raise Exception (f"'{level_of_agg}' is not a known level of aggregation!")
+def aggregate(fd):
+   
+    groupby_list = ['currentmonth', 'currentyear','section_no', 'district_no','borough']
     this_agg = fd.groupby(groupby_list).agg(st_rate_avg=('st_mean', np.mean),
                                                                 st_count=('st_rated', np.sum),
                                                                 st_count_accept=('st_acceptable', np.sum),
@@ -113,7 +127,10 @@ def aggregate(fd, level_of_agg):
     this_agg.to_csv('this_agg.csv')
     return this_agg
 
-def merge_linear_miles(this_agg):     #add linear miles
+def merge_linear_miles(this_agg):  
+    if len(this_agg.index) == 0:
+        return this_agg
+    #add linear miles
     lm = pd.read_csv('linear_miles.csv')
     lm['linear_miles'] = lm['LINEAR_MILES']
     lm['section_no'] = lm['SECTION']
@@ -121,6 +138,8 @@ def merge_linear_miles(this_agg):     #add linear miles
     return this_agg
 
 def rating_calculation(a):
+    if len(a.index) == 0:
+        return a
     #print(a.info())
     #a['month'] = a['currentyear'] * 100 + a['currentmonth']
     a['street_rating_average'] = round(a['st_rate_avg'], 3)
@@ -143,7 +162,9 @@ def rating_calculation(a):
     a.to_csv('rating_calculation.csv')
     return a
 
-def merge_district(a):    
+def merge_district(a):
+    if len(a.index) == 0:
+        return a
     #need to left join district.
     d = pd.read_csv('district.csv')
     d['district_no'] = d['District']
@@ -156,9 +177,11 @@ def merge_district(a):
     return a
 
 def final_format(a):
+    if len(a.index) == 0:
+        return null_answer
     df = pd.DataFrame()
-    #df['BOROUGH'] = a.Borough
-    #df['District'] = a.District
+    df['BOROUGH'] = a.Borough
+    df['DISTRICT'] = a.District
     df['SECTION'] = a.section_no
     #the month will be determined by query not realitiy
     df['MONTH'] = a['month']
@@ -179,3 +202,19 @@ def final_format(a):
     df.to_csv("answer.csv")
     return df
     
+null_answer = pd.DataFrame(columns=['BOROUGH', 
+                            'DISTRICT', 
+                            'SECTION', 
+                            'MONTH', 
+                            'STREET_RATING_AVG', 
+                            'STREETS_CNT', 
+                            'STREETS_ACCEPTABLE_CNT',
+                            'STREETS_ACCEPTABLE_MILES',
+                            'STREETS_FILTHY_CNT',
+                            'STREETS_FILTHY_MILES',
+                            'SIDEWALKS_RATING_AVG',
+                            'SIDEWALKS_CNT',
+                            'SIDEWALKS_ACCEPTABLE_MILES',
+                            'SIDEWALKS_FILTHY_CNT',
+                            'SIDEWALKS_FILTHY_MILES',
+                            'LINEAR_MILES'])
