@@ -12,11 +12,14 @@ street_mean = 1.4
 #print(map(lambda x: 1 if x < 1.5 else 0, street_mean ))
 street_mean = 1.6
 #print(map(lambda x: 1 if x < 1.5 else 0, street_mean ))
-
+import datetime
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
 #[1.0, 2.0, 3.0].apply(lambda x : int(x))
 #foo = map(lambda x: int(x), [1.0, 2.0, 3.0])
 #print(foo)
-
+import percent_clean_scores_section as pcss
+import percent_clean_scores_district as pcsd
 
 def mean_calc(one, two, three, four):
     zero_if_null = lambda x: 0 if pd.isna(x) else x
@@ -37,6 +40,8 @@ rated_lambda = lambda x: None if pd.isna(x) else 1
 a = [rated_lambda(x) for x in street_mean]
 print(a)
 '''
+
+'''
 df = pd.read_csv('bkn172_no5.csv')
 none_if_na_else_1 = lambda x: None if pd.isna(x) else 1
 
@@ -56,3 +61,15 @@ for index, row in df.iterrows():
     #print(f"stop_number: {row['stop_number']}, sw_mean: {sidewalk_mean}, sw_acceptable: {sw_acceptable}, sw_rated: {sw_rated}")
 
 print(f"mean calc 1.5 {mean_calc(1.5, 1.5, None, None)}")
+
+'''
+'''
+yyyy = 2021
+mm = 11
+three_months_ago_date = datetime.date(yyyy, mm, 1) - relativedelta(months=2)
+print(three_months_ago_date)
+'''
+fd = pd.read_csv('fulcrum_data.csv')
+#df = pcss.load_fulcrum_data(fd, 2020, 11, True)
+df = pcsd.percent_clean_scores_district(fd, 2021, 11)
+#print(df.head(60))
