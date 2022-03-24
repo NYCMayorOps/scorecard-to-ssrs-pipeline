@@ -19,19 +19,19 @@ def percent_clean_scores_district(fd, yyyy, mm):
     l3mg = group_by_district(l3m)
     oyal3mg = group_by_district(oyal3m)
     #calculate percent changes.
-    print(oyal3mg.info())
-    return oyal3mg
+    
+
 
 def group_by_district(df):
     df = df[['BOROUGH', 'DISTRICT', 'STREETS_ACCEPTABLE_MILES', 'STREETS_FILTHY_MILES', 'SIDEWALKS_ACCEPTABLE_MILES', 'SIDEWALKS_FILTHY_MILES']]
-    df.groupby(['BOROUGH', 'DISTRICT']).agg(streets_acceptable_miles=('STREETS_ACCEPTABLE_MILES', np.sum),
+    df = df.groupby(['BOROUGH', 'DISTRICT']).agg(streets_acceptable_miles=('STREETS_ACCEPTABLE_MILES', np.sum),
                                            streets_filthy_miles=('STREETS_FILTHY_MILES', np.sum),
                                            sidewalks_acceptable_miles=('SIDEWALKS_ACCEPTABLE_MILES', np.sum),
                                            sidewalks_filthy_miles=('SIDEWALKS_FILTHY_MILES', np.sum),                                        
                                         )
-    df.reset_index(inplace=True, drop=True)
+    df.reset_index(inplace=True)
     print("##### group by info #####")
     print(df.shape)
     print(df.info())
-    print(df['BOROUGH','DISTRICT', 'STREETS_ACCEPTABLE_MILES']].head(60))
+    print(df[['BOROUGH','DISTRICT', 'streets_acceptable_miles']].head(60))
     return df
