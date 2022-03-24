@@ -30,8 +30,4 @@ def group_by_district(df):
                                            sidewalks_filthy_miles=('SIDEWALKS_FILTHY_MILES', np.sum),                                        
                                         )
     df.reset_index(inplace=True)
-    print("##### group by info #####")
-    print(df.shape)
-    print(df.info())
-    print(df[['BOROUGH','DISTRICT', 'streets_acceptable_miles']].head(60))
     return df
