@@ -4,7 +4,7 @@ import numpy as np
 
 fd = pd.read_csv('fulcrum_data.csv')
 
-def percent_clean_scores_district(fd, yyyy, mm):
+def scorecard_districts(fd, yyyy, mm):
     #find this month
     tm = pcss.scorecard_sections(fd, yyyy, mm, True)
     #find one year ago

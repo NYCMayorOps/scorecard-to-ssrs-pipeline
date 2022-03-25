@@ -9,7 +9,7 @@ from pandas import testing
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
-pd.options.mode.chained_assignment = 'raise'
+pd.options.mode.chained_assignment = 'warn'
 
 #formerly know as scout_v2_fulcrum_export_cpr in SQL
 def scorecard_sections(fd, yyyy, mm, is_one_month=True):
@@ -40,7 +40,8 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None)
     #print(fd.info())
     fd['my_date'] = pd.to_datetime(fd['_updated_at'], format='%Y-%m')
     start_date = datetime.strptime(f'{yyyy}-{mm}', '%Y-%m')
-    end_date = datetime.strptime(f'{end_year}-{end_month}', '%Y-%m')
+    if (end_year and end_month):
+        end_date = datetime.strptime(f'{end_year}-{end_month}', '%Y-%m')
 
     #select by this month result is 100 rows in test.
     if (is_one_month):
@@ -57,6 +58,7 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None)
     else: 
         raise Exception("the parameters for load_fulcrum_data are wrong. did you specify end year and end month?")
     print(f"current months: {set(fd['currentmonth'])}, current years: {set(fd['currentyear'])}")
+    fd = fd.copy()
     fd['st_mean'] = None
     fd['sw_mean'] = None
     fd['st_acceptable'] = None
@@ -76,7 +78,6 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None)
     fd['sidewalk_2'] = fd['sidewalk_2'].apply(null_if_five) 
     fd['sidewalk_3'] = fd['sidewalk_3'].apply(null_if_five) 
     fd['sidewalk_4'] = fd['sidewalk_4'].apply(null_if_five)
-    
     fd_copy = fd.copy()
 
     for index, row in fd_copy.iterrows():
