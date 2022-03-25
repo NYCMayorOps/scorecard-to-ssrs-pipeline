@@ -71,5 +71,6 @@ print(three_months_ago_date)
 '''
 fd = pd.read_csv('fulcrum_data.csv')
 #df = pcss.load_fulcrum_data(fd, 2020, 11, True)
-df = pcsd.percent_clean_scores_district(fd, 2021, 11)
+pcss.scorecard_sections(fd, 2021, 11, True)
+#df = pcsd.scorecard_districts(fd, 2021, 11)
 #print(df.head(60))

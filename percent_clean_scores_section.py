@@ -9,10 +9,10 @@ from pandas import testing
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
-pd.options.mode.chained_assignment = None
+pd.options.mode.chained_assignment = 'raise'
 
 #formerly know as scout_v2_fulcrum_export_cpr in SQL
-def scorecard_sections(fd, yyyy, mm, is_one_month):
+def scorecard_sections(fd, yyyy, mm, is_one_month=True):
     #print(f"fulcrum data info:")
     #print(fd.info())
     
@@ -35,23 +35,27 @@ def mean_calc(one, two, three, four):
 
 
     
-def load_fulcrum_data(fd, yyyy, mm, is_one_month):
+def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None):
     #fd for fulcrum data, same as sql
     #print(fd.info())
     fd['my_date'] = pd.to_datetime(fd['_updated_at'], format='%Y-%m')
-    #pad_month = (lambda x : ('0' + str(x)) if len(str(int(x))) == 1 else str(x))
-    #current month is an int #print(type(fd['currentmonth'][0]))
+    start_date = datetime.strptime(f'{yyyy}-{mm}', '%Y-%m')
+    end_date = datetime.strptime(f'{end_year}-{end_month}', '%Y-%m')
+
     #select by this month result is 100 rows in test.
     if (is_one_month):
-        #aren't these and statements the same?
-        fd = fd.loc[(fd['my_date'] == f'{yyyy}-{mm}') & (fd['currentmonth'] == mm) & (fd['currentyear'] == yyyy)]
-    else:
+        #aren't these and statements the same? Sometimes the edit date is not the current month.
+        fd = fd.loc[((fd['my_date'] == start_date) & (fd['currentmonth'] == mm) & (fd['currentyear'] == yyyy))]
+    elif (end_year == None and end_month == None):
         #if not one month, than this month and the previous two months,making three months.
         #staring with the last day of the month, three months ago is actuall the first day of two months ago. 
         #so September 1st to November 31st
         three_months_ago_date = datetime.strptime(f'{yyyy}-{mm}', '%Y-%m') - relativedelta(months=2)
-        fd = fd.loc[(fd['my_date'] >= three_months_ago_date) & (fd['my_date'] <= f'{yyyy}-{mm}')]
-
+        fd = fd.loc[((fd['my_date'] >= three_months_ago_date) & (fd['my_date'] <= f'{yyyy}-{mm}'))]
+    elif (end_year is not None and end_month is not None):
+        fd = fd.loc[((fd['my_date'] >= start_date) & (fd['my_date'] <= end_date))]
+    else: 
+        raise Exception("the parameters for load_fulcrum_data are wrong. did you specify end year and end month?")
     print(f"current months: {set(fd['currentmonth'])}, current years: {set(fd['currentyear'])}")
     fd['st_mean'] = None
     fd['sw_mean'] = None
@@ -218,3 +222,4 @@ null_answer = pd.DataFrame(columns=['BOROUGH',
                             'SIDEWALKS_FILTHY_CNT',
                             'SIDEWALKS_FILTHY_MILES',
                             'LINEAR_MILES'])
+
