@@ -181,7 +181,28 @@ def merge_district(a):
     a.to_csv('merge_districts.csv')
     return a
 
+
+
+
 def final_format(a):
+    null_answer = pd.DataFrame(columns=['BOROUGH', 
+                            'DISTRICT', 
+                            'SECTION', 
+                            'MONTH', 
+                            'STREET_RATING_AVG', 
+                            'STREETS_CNT', 
+                            'STREETS_ACCEPTABLE_CNT',
+                            'STREETS_ACCEPTABLE_MILES',
+                            'STREETS_FILTHY_CNT',
+                            'STREETS_FILTHY_MILES',
+                            'SIDEWALKS_RATING_AVG',
+                            'SIDEWALKS_CNT',
+                            'SIDEWALKS_ACCEPTABLE_CNT',
+                            'SIDEWALKS_ACCEPTABLE_MILES',
+                            'SIDEWALKS_FILTHY_CNT',
+                            'SIDEWALKS_FILTHY_MILES',
+                            'LINEAR_MILES'])
+                            
     if len(a.index) == 0:
         return null_answer
     df = pd.DataFrame()
@@ -196,7 +217,7 @@ def final_format(a):
     df['STREETS_ACCEPTABLE_MILES'] = a.streets_acceptable_miles
     df['STREETS_FILTHY_MILES'] = a.streets_filthy_miles
     df['STREETS_FILTHY_CNT'] = a.streets_filthy_cnt
-    df['SIDEWALK_RATING_AVG'] = a.sw_rate_avg.round(3)
+    df['SIDEWALKS_RATING_AVG'] = a.sw_rate_avg.round(3)
     df['SIDEWALKS_CNT'] = a.sw_count
     df['SIDEWALKS_ACCEPTABLE_CNT'] = a.sidewalks_acceptable_cnt
     df['SIDEWALKS_ACCEPTABLE_MILES'] = a.sidewalks_acceptable_miles
@@ -207,20 +228,4 @@ def final_format(a):
     df.to_csv("answer.csv")
     return df
     
-null_answer = pd.DataFrame(columns=['BOROUGH', 
-                            'DISTRICT', 
-                            'SECTION', 
-                            'MONTH', 
-                            'STREET_RATING_AVG', 
-                            'STREETS_CNT', 
-                            'STREETS_ACCEPTABLE_CNT',
-                            'STREETS_ACCEPTABLE_MILES',
-                            'STREETS_FILTHY_CNT',
-                            'STREETS_FILTHY_MILES',
-                            'SIDEWALKS_RATING_AVG',
-                            'SIDEWALKS_CNT',
-                            'SIDEWALKS_ACCEPTABLE_MILES',
-                            'SIDEWALKS_FILTHY_CNT',
-                            'SIDEWALKS_FILTHY_MILES',
-                            'LINEAR_MILES'])
 
