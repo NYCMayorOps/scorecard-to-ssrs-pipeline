@@ -38,7 +38,9 @@ def mean_calc(one, two, three, four):
 def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None):
     #fd for fulcrum data, same as sql
     #print(fd.info())
-    fd['my_date'] = pd.to_datetime(fd['_updated_at'], format='%Y-%m')
+    fd['my_date2'] = pd.to_datetime(fd['_updated_at'], format='%Y-%m-%d %H:%M:%S')
+    #have to truncate the day and time from my_date for equality comparison with other datetimes (yyyy-mm).
+    fd['my_date'] = fd['my_date2'].apply(lambda x: datetime.strptime(datetime.strftime(x, '%Y-%m'), '%Y-%m'))
     start_date = datetime.strptime(f'{yyyy}-{mm}', '%Y-%m')
     if (end_year and end_month):
         end_date = datetime.strptime(f'{end_year}-{end_month}', '%Y-%m')
@@ -57,7 +59,7 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None)
         fd = fd.loc[((fd['my_date'] >= start_date) & (fd['my_date'] <= end_date))]
     else: 
         raise Exception("the parameters for load_fulcrum_data are wrong. did you specify end year and end month?")
-    print(f"current months: {set(fd['currentmonth'])}, current years: {set(fd['currentyear'])}")
+    #print(f"current months: {set(fd['currentmonth'])}, current years: {set(fd['currentyear'])}")
     fd = fd.copy()
     fd['st_mean'] = None
     fd['sw_mean'] = None
@@ -113,6 +115,9 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None)
     fd.to_csv('fd_pre_aggregate.csv')
     return fd
 
+#nullif lambda function (global scope)
+nullif = lambda x: x if x > 0 else None
+
 def aggregate(fd):
    
     groupby_list = ['currentmonth', 'currentyear','section_no', 'district_no','borough']
@@ -129,7 +134,10 @@ def aggregate(fd):
                                                                 )
     #fd.to_csv('output.csv')
     this_agg.reset_index(inplace=True)
-    this_agg.to_csv('this_agg.csv')
+    this_agg['st_count'] = this_agg['st_count'].apply(nullif)
+    this_agg['st_count_rated'] = this_agg['st_count_rated'].apply(nullif)
+    this_agg['sw_count'] = this_agg['sw_count'].apply(nullif)
+    this_agg['sw_count_rated'] = this_agg['sw_count_rated'].apply(nullif)
     return this_agg
 
 def merge_linear_miles(this_agg):  
@@ -140,6 +148,14 @@ def merge_linear_miles(this_agg):
     lm['linear_miles'] = lm['LINEAR_MILES']
     lm['section_no'] = lm['SECTION']
     this_agg = this_agg.merge(lm, how='right', on='section_no' )
+    #you have to get rid of linear miles on null or zero street counts because linear miles are aggregated for the calculation.
+    #section is the lowest level of aggregation with linear miles. It is the correct level to filter linear miles.
+    this_agg_copy = this_agg.copy()
+    for index, row in this_agg_copy.iterrows():
+        if nullif(row['st_count_rated']) is None:
+            this_agg.at[index, 'LINEAR_MILES'] = None
+            this_agg.at[index, 'linear_miles'] = None
+    this_agg.to_csv('this_agg.csv')
     return this_agg
 
 def rating_calculation(a):

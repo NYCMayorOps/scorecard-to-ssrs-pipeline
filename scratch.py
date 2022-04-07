@@ -20,6 +20,7 @@ from dateutil.relativedelta import relativedelta
 #print(foo)
 import percent_clean_scores_section as pcss
 import percent_clean_scores_district as pcsd
+import percent_clean_scores_boro as pcsb
 
 def mean_calc(one, two, three, four):
     zero_if_null = lambda x: 0 if pd.isna(x) else x
@@ -70,7 +71,8 @@ three_months_ago_date = datetime.date(yyyy, mm, 1) - relativedelta(months=2)
 print(three_months_ago_date)
 '''
 fd = pd.read_csv('fulcrum_data.csv')
-#df = pcss.load_fulcrum_data(fd, 2020, 11, True)
-#pcss.scorecard_sections(fd, 2021, 11, True)
+df = pcss.load_fulcrum_data(fd, 2020, 11, True)
+#df = pcss.scorecard_sections(fd, 2021, 11, True)
 df = pcsd.scorecard_districts(fd, 2021, 11)
+#df = pcsb.scorecard_boro(fd, 2021, 11)
 print(df.info())
