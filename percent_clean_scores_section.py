@@ -38,7 +38,12 @@ def mean_calc(one, two, three, four):
 def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None):
     #fd for fulcrum data, same as sql
     #print(fd.info())
-    fd['my_date'] = pd.to_datetime(fd['_updated_at'], format='%Y-%m')
+    fd['my_date2'] = pd.to_datetime(fd['_updated_at'], format='%Y-%m-%d %H:%M:%S')
+    #have to truncate the day and time from my_date for equality comparison with other datetimes (yyyy-mm).
+    fd['my_date'] = fd['my_date2'].apply(lambda x: datetime.strptime(datetime.strftime(x, '%Y-%m'), '%Y-%m'))
+    next_month = datetime.strptime(f"{yyyy}-{mm +1}", '%Y-%m')
+    this_date = next_month - relativedelta(days=1)
+    #print(f"this date: {this_date}")
     start_date = datetime.strptime(f'{yyyy}-{mm}', '%Y-%m')
     if (end_year and end_month):
         end_date = datetime.strptime(f'{end_year}-{end_month}', '%Y-%m')
@@ -47,17 +52,19 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None)
     if (is_one_month):
         #aren't these and statements the same? Sometimes the edit date is not the current month.
         fd = fd.loc[((fd['my_date'] == start_date) & (fd['currentmonth'] == mm) & (fd['currentyear'] == yyyy))]
+    #is_one_month is false. Looking for three months.
     elif (end_year == None and end_month == None):
         #if not one month, than this month and the previous two months,making three months.
         #staring with the last day of the month, three months ago is actuall the first day of two months ago. 
         #so September 1st to November 31st
         three_months_ago_date = datetime.strptime(f'{yyyy}-{mm}', '%Y-%m') - relativedelta(months=2)
-        fd = fd.loc[((fd['my_date'] >= three_months_ago_date) & (fd['my_date'] <= f'{yyyy}-{mm}'))]
+        #print(f"three months ago date: {three_months_ago_date}")
+        fd = fd.loc[((fd['my_date'] >= three_months_ago_date) & (fd['my_date'] <= this_date))]
     elif (end_year is not None and end_month is not None):
         fd = fd.loc[((fd['my_date'] >= start_date) & (fd['my_date'] <= end_date))]
     else: 
         raise Exception("the parameters for load_fulcrum_data are wrong. did you specify end year and end month?")
-    print(f"current months: {set(fd['currentmonth'])}, current years: {set(fd['currentyear'])}")
+    #print(f"current months: {set(fd['currentmonth'])}, current years: {set(fd['currentyear'])}")
     fd = fd.copy()
     fd['st_mean'] = None
     fd['sw_mean'] = None
@@ -113,6 +120,9 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None)
     fd.to_csv('fd_pre_aggregate.csv')
     return fd
 
+#nullif lambda function (global scope)
+nullif = lambda x: x if x > 0 else None
+
 def aggregate(fd):
    
     groupby_list = ['currentmonth', 'currentyear','section_no', 'district_no','borough']
@@ -129,7 +139,10 @@ def aggregate(fd):
                                                                 )
     #fd.to_csv('output.csv')
     this_agg.reset_index(inplace=True)
-    this_agg.to_csv('this_agg.csv')
+    this_agg['st_count'] = this_agg['st_count'].apply(nullif)
+    this_agg['st_count_rated'] = this_agg['st_count_rated'].apply(nullif)
+    this_agg['sw_count'] = this_agg['sw_count'].apply(nullif)
+    this_agg['sw_count_rated'] = this_agg['sw_count_rated'].apply(nullif)
     return this_agg
 
 def merge_linear_miles(this_agg):  
@@ -140,6 +153,14 @@ def merge_linear_miles(this_agg):
     lm['linear_miles'] = lm['LINEAR_MILES']
     lm['section_no'] = lm['SECTION']
     this_agg = this_agg.merge(lm, how='right', on='section_no' )
+    #you have to get rid of linear miles on null or zero street counts because linear miles are aggregated for the calculation.
+    #section is the lowest level of aggregation with linear miles. It is the correct level to filter linear miles.
+    this_agg_copy = this_agg.copy()
+    for index, row in this_agg_copy.iterrows():
+        if nullif(row['st_count_rated']) is None:
+            this_agg.at[index, 'LINEAR_MILES'] = None
+            this_agg.at[index, 'linear_miles'] = None
+    this_agg.to_csv('this_agg.csv')
     return this_agg
 
 def rating_calculation(a):
@@ -181,7 +202,28 @@ def merge_district(a):
     a.to_csv('merge_districts.csv')
     return a
 
+
+
+
 def final_format(a):
+    null_answer = pd.DataFrame(columns=['BOROUGH', 
+                            'DISTRICT', 
+                            'SECTION', 
+                            'MONTH', 
+                            'STREET_RATING_AVG', 
+                            'STREETS_CNT', 
+                            'STREETS_ACCEPTABLE_CNT',
+                            'STREETS_ACCEPTABLE_MILES',
+                            'STREETS_FILTHY_CNT',
+                            'STREETS_FILTHY_MILES',
+                            'SIDEWALKS_RATING_AVG',
+                            'SIDEWALKS_CNT',
+                            'SIDEWALKS_ACCEPTABLE_CNT',
+                            'SIDEWALKS_ACCEPTABLE_MILES',
+                            'SIDEWALKS_FILTHY_CNT',
+                            'SIDEWALKS_FILTHY_MILES',
+                            'LINEAR_MILES'])
+                            
     if len(a.index) == 0:
         return null_answer
     df = pd.DataFrame()
@@ -196,7 +238,7 @@ def final_format(a):
     df['STREETS_ACCEPTABLE_MILES'] = a.streets_acceptable_miles
     df['STREETS_FILTHY_MILES'] = a.streets_filthy_miles
     df['STREETS_FILTHY_CNT'] = a.streets_filthy_cnt
-    df['SIDEWALK_RATING_AVG'] = a.sw_rate_avg.round(3)
+    df['SIDEWALKS_RATING_AVG'] = a.sw_rate_avg.round(3)
     df['SIDEWALKS_CNT'] = a.sw_count
     df['SIDEWALKS_ACCEPTABLE_CNT'] = a.sidewalks_acceptable_cnt
     df['SIDEWALKS_ACCEPTABLE_MILES'] = a.sidewalks_acceptable_miles
@@ -207,20 +249,4 @@ def final_format(a):
     df.to_csv("answer.csv")
     return df
     
-null_answer = pd.DataFrame(columns=['BOROUGH', 
-                            'DISTRICT', 
-                            'SECTION', 
-                            'MONTH', 
-                            'STREET_RATING_AVG', 
-                            'STREETS_CNT', 
-                            'STREETS_ACCEPTABLE_CNT',
-                            'STREETS_ACCEPTABLE_MILES',
-                            'STREETS_FILTHY_CNT',
-                            'STREETS_FILTHY_MILES',
-                            'SIDEWALKS_RATING_AVG',
-                            'SIDEWALKS_CNT',
-                            'SIDEWALKS_ACCEPTABLE_MILES',
-                            'SIDEWALKS_FILTHY_CNT',
-                            'SIDEWALKS_FILTHY_MILES',
-                            'LINEAR_MILES'])
 
