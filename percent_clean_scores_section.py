@@ -41,6 +41,9 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None)
     fd['my_date2'] = pd.to_datetime(fd['_updated_at'], format='%Y-%m-%d %H:%M:%S')
     #have to truncate the day and time from my_date for equality comparison with other datetimes (yyyy-mm).
     fd['my_date'] = fd['my_date2'].apply(lambda x: datetime.strptime(datetime.strftime(x, '%Y-%m'), '%Y-%m'))
+    next_month = datetime.strptime(f"{yyyy}-{mm +1}", '%Y-%m')
+    this_date = next_month - relativedelta(days=1)
+    #print(f"this date: {this_date}")
     start_date = datetime.strptime(f'{yyyy}-{mm}', '%Y-%m')
     if (end_year and end_month):
         end_date = datetime.strptime(f'{end_year}-{end_month}', '%Y-%m')
@@ -49,12 +52,14 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None)
     if (is_one_month):
         #aren't these and statements the same? Sometimes the edit date is not the current month.
         fd = fd.loc[((fd['my_date'] == start_date) & (fd['currentmonth'] == mm) & (fd['currentyear'] == yyyy))]
+    #is_one_month is false. Looking for three months.
     elif (end_year == None and end_month == None):
         #if not one month, than this month and the previous two months,making three months.
         #staring with the last day of the month, three months ago is actuall the first day of two months ago. 
         #so September 1st to November 31st
         three_months_ago_date = datetime.strptime(f'{yyyy}-{mm}', '%Y-%m') - relativedelta(months=2)
-        fd = fd.loc[((fd['my_date'] >= three_months_ago_date) & (fd['my_date'] <= f'{yyyy}-{mm}'))]
+        #print(f"three months ago date: {three_months_ago_date}")
+        fd = fd.loc[((fd['my_date'] >= three_months_ago_date) & (fd['my_date'] <= this_date))]
     elif (end_year is not None and end_month is not None):
         fd = fd.loc[((fd['my_date'] >= start_date) & (fd['my_date'] <= end_date))]
     else: 

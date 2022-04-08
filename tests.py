@@ -28,6 +28,7 @@ class TestClass(unittest.TestCase):
         print("test percent clean scores district passed.")
         print("")
     
+    '''
     def test_percent_clean_scores_boro(var):
         df = pd.read_csv('fd_mock_all.csv')
         actual = scorecard_boro(df, 2021, 11)
@@ -35,6 +36,6 @@ class TestClass(unittest.TestCase):
         expected = pd.read_csv('dd_boro_2021_11.csv')
         pd.testing.assert_frame_equal(expected, actual)
         print("percent clean scores borough passed.")
-
+    '''
 if __name__ == "__main__":
     unittest.main()
