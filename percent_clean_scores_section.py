@@ -118,7 +118,7 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None)
     #print(fd.info())
     #df.agg(x=('A', max), y=('B', 'min'), z=('C', np.mean))
    
-    fd.to_csv('fd_pre_aggregate.csv')
+    #fd.to_csv('fd_pre_aggregate.csv')
     return fd
 
 #nullif lambda function (global scope)
@@ -138,7 +138,6 @@ def aggregate(fd):
                                                                 sw_count_filthy=('sw_filthy', np.sum),
                                                                 sw_count_rated=('sw_rated', np.sum),                                               
                                                                 )
-    #fd.to_csv('output.csv')
     this_agg.reset_index(inplace=True)
     this_agg['st_count'] = this_agg['st_count'].apply(nullif)
     this_agg['st_count_rated'] = this_agg['st_count_rated'].apply(nullif)
@@ -186,7 +185,7 @@ def rating_calculation(a):
     a['sidewalks_filthy_miles'] = round(a.sw_count_filthy / a.sw_count_rated *  a.linear_miles , 3)
     a['sidewalks_filthy_cnt'] =  nullif(a['sw_count_rated']) / a['sw_count_rated'] * a['sw_count_filthy']
     a['linear_miles'] = round(a['linear_miles'], 3)
-    a.to_csv('rating_calculation.csv')
+    #a.to_csv('rating_calculation.csv')
     return a
 
 def merge_district(a):
@@ -200,7 +199,7 @@ def merge_district(a):
     month_zero = (a['currentyear'] * 100 + a['currentmonth']).fillna('0')
     month_zero_int = month_zero.astype(int)
     a['month'] = month_zero_int.map(lambda x: None if x == 0 else x)
-    a.to_csv('merge_districts.csv')
+    #a.to_csv('merge_districts.csv')
     return a
 
 
@@ -247,7 +246,7 @@ def final_format(a):
     df['SIDEWALKS_FILTHY_MILES'] = a.sidewalks_filthy_miles
     df['LINEAR_MILES'] = a.linear_miles
     #SECTION,MONTH,STREET_RATING_AVG,STREETS_CNT,STREETS_ACCEPTABLE_CNT,STREETS_ACCEPTABLE_MILES,STREETS_FILTHY_MILES,STREETS_FILTHY_CNT,SIDEWALK_RATING_AVG,SIDEWALKS_CNT,SIDEWALKS_ACCEPTABLE_CNT,SIDEWALKS_ACCEPTABLE_MILES,SIDEWALKS_FILTHY_CNT,SIDEWALKS_FILTHY_MILES,LINEAR_MILES,BULK_STREET_RATING_AVG,BULK_SIDEWALK_RATING_AVG,BULK_STREETS_CNT,BULK_SIDEWALKS_CNT
-    df.to_csv("answer.csv")
+    #df.to_csv("answer.csv")
     return df
     
 

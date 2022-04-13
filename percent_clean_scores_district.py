@@ -1,9 +1,12 @@
 import percent_clean_scores_section as pcss
 import pandas as pd
 import numpy as np
+from connector import Connector
 
-fd = pd.read_csv('fulcrum_data.csv')
-district = pd.read_csv('district.csv')
+connector = Connector
+
+
+district = connector.district
 pad_month= lambda x: str(x) if (len(str(int(x))) == 2) else '0' + str(int(x))
 
 def scorecard_districts(fd, yyyy, mm):

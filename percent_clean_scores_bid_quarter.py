@@ -2,7 +2,7 @@ from importlib_metadata import Sectioned
 import percent_clean_scores_section as pcss
 import pandas as pd
 import numpy as np
-
+from connector import Connector
 
 
 pad_month= lambda x: str(x) if (len(str(int(x))) == 2) else '0' + str(int(x))
@@ -96,7 +96,8 @@ def group_by_bid(df):
         #raise Exception("group_by_bid started off empty")
     df['quarter'] = df['MONTH'].apply( lambda x: find_quarter(x))
     df.drop('LINEAR_MILES', axis=1, inplace=True)
-    bids = pd.read_csv('bid_section_crosswalk.csv')
+    #bids = pd.read_csv('bid_section_crosswalk.csv')
+    bids = Connector.bid_section_crosswalk
     bids.reset_index(drop=True, inplace=True)
     df = pd.merge(df, bids, on='SECTION', how='inner')
     df.reset_index(drop=True, inplace=True)

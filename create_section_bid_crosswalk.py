@@ -1,6 +1,9 @@
 import pandas as pd
-lm = pd.read_csv('linear_miles.csv')
-bid = pd.read_csv('bids.csv')
+#this will be offline.
+from connector import Connector
+connector = Connector()
+lm = connector.linear_miles
+bid = connector.bids
 bid['SECTION'] = bid['BidIdentifier'].apply(lambda x: x.split('_')[-2])
 bid.drop('BidIdentifier', axis=1, inplace=True)
 df = pd.merge(bid, lm, how='right', on='SECTION')
