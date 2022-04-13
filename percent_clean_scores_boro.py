@@ -3,13 +3,12 @@ import pandas as pd
 import numpy as np
 from connector import Connector
 
-connector = Connector
+connector=Connector()
 
-
-district = connector.district
+district = pd.read_csv('district.csv')
 pad_month= lambda x: str(x) if (len(str(int(x))) == 2) else '0' + str(int(x))
 
-def scorecard_districts(fd, yyyy, mm):
+def scorecard_boro(fd, yyyy, mm):
     #find this month
     tm = pcss.scorecard_sections(fd, yyyy, mm, True)
     #find one year ago
@@ -20,24 +19,51 @@ def scorecard_districts(fd, yyyy, mm):
     oyal3m = pcss.scorecard_sections(fd, int(yyyy - 1), mm, False)
     #group by district
     #print(oya.info())
-    tmg = group_by_district(tm)
-    oyag = group_by_district(oya)
-    l3mg = group_by_district(l3m)
-    oyal3mg = group_by_district(oyal3m)
+    tmg = group_by_boro(tm)
+    oyag = group_by_boro(oya)
+    l3mg = group_by_boro(l3m)
+    oyal3mg = group_by_boro(oyal3m)
     #calculate percent changes.
-    big_combine = final_district_df_combine(tmg, oyag, l3mg, oyal3mg)
-    dclean =  districts_cleanup(big_combine, yyyy, mm)
-    dclean =  pd.merge(dclean, district, how='right', on='District' )
+    big_combine = boro_df_combine(tmg, oyag, l3mg, oyal3mg)
+    dclean =  boro_cleanup(big_combine, yyyy, mm)
+    #not needed. All boros will always be present so no need to right join to a list of boroughs.
+    #dclean =  pd.merge(dclean, district, how='right', on='District' )
     dclean['Month'] = dclean['Month'].apply(lambda x: str(yyyy) + pad_month(mm))
-    dclean['Borough'] = dclean['Borough_y']
-    dclean.drop(['Borough_x', 'Borough_y'], axis=1, inplace=True)
-    dclean.insert(0, 'Borough', dclean.pop('Borough'))
-    dclean.to_csv('answer_district.csv')
+    #dclean['Borough'] = dclean['Borough_y']
+    #dclean.drop(['Borough_x', 'Borough_y'], axis=1, inplace=True)
+    #dclean.insert(0, 'Borough', dclean.pop('Borough'))
+    #dclean.to_csv('answer_boro.csv')
     return dclean
 
+def scorecard_citywide(fd, yyyy, mm):
+    #find this month
+    tm = pcss.scorecard_sections(fd, yyyy, mm, True)
+    #find one year ago
+    oya = pcss.scorecard_sections(fd, int(yyyy - 1), mm, True)
+    #find last three months
+    l3m = pcss.scorecard_sections(fd, yyyy, mm, False)
+    #find last three months one year ago
+    oyal3m = pcss.scorecard_sections(fd, int(yyyy - 1), mm, False)
+    #group by district
+    #print(oya.info())
+    tmg = group_by_citywide(tm)
+    oyag = group_by_citywide(oya)
+    l3mg = group_by_citywide(l3m)
+    oyal3mg = group_by_citywide(oyal3m)
+    #calculate percent changes.
+    big_combine = boro_df_combine(tmg, oyag, l3mg, oyal3mg)
+    dclean =  boro_cleanup(big_combine, yyyy, mm)
+    #not needed. All boros will always be present so no need to right join to a list of boroughs.
+    #dclean =  pd.merge(dclean, district, how='right', on='District' )
+    dclean['Month'] = dclean['Month'].apply(lambda x: str(yyyy) + pad_month(mm))
+    #dclean['Borough'] = dclean['Borough_y']
+    #dclean.drop(['Borough_x', 'Borough_y'], axis=1, inplace=True)
+    #dclean.insert(0, 'Borough', dclean.pop('Borough'))
+    #dclean.to_csv('answer_citywide.csv')
+    return dclean
 
-def group_by_district(df):
-    df = df.groupby(['BOROUGH', 'DISTRICT']).agg( street_rating_avg=('STREET_RATING_AVG', np.mean),
+def group_by_boro(df):
+    df = df.groupby(['BOROUGH']).agg( street_rating_avg=('STREET_RATING_AVG', np.mean),
                                            streets_cnt=('STREETS_CNT', np.sum),
                                            streets_acceptable_cnt=('STREETS_ACCEPTABLE_CNT', np.sum),
                                            streets_acceptable_miles=('STREETS_ACCEPTABLE_MILES', np.sum),
@@ -57,11 +83,32 @@ def group_by_district(df):
     return df
 
 
-def final_district_df_combine(tmg, oyag, l3mg, oyal3mg):
+def group_by_citywide(df):
+    df['BOROUGH'] = 'New York City'
+    df = df.groupby(['BOROUGH']).agg( street_rating_avg=('STREET_RATING_AVG', np.mean),
+                                           streets_cnt=('STREETS_CNT', np.sum),
+                                           streets_acceptable_cnt=('STREETS_ACCEPTABLE_CNT', np.sum),
+                                           streets_acceptable_miles=('STREETS_ACCEPTABLE_MILES', np.sum),
+                                           streets_filthy_cnt=('STREETS_FILTHY_CNT', np.sum),
+                                           streets_filthy_miles=('STREETS_FILTHY_MILES', np.sum),
+                                           sidewalks_rating_avg=('SIDEWALKS_RATING_AVG', np.mean),
+                                           sidewalks_cnt=('SIDEWALKS_CNT', np.sum),
+                                           sidewalks_acceptable_cnt=('SIDEWALKS_ACCEPTABLE_CNT', np.sum),
+                                           sidewalks_acceptable_miles=('SIDEWALKS_ACCEPTABLE_MILES', np.sum),
+                                           sidewalks_filthy_cnt=('SIDEWALKS_FILTHY_CNT', np.sum),
+                                           sidewalks_filthy_miles=('SIDEWALKS_FILTHY_MILES', np.sum),
+                                           linear_miles=('LINEAR_MILES', np.sum)                                   
+                                        )
+    df['cnt'] = df['streets_cnt'].apply(nullif)
+    df['sidewalks_cnt'] = df['sidewalks_cnt'].apply(nullif)
+    df.reset_index(inplace=True)
+    return df
+
+def boro_df_combine(tmg, oyag, l3mg, oyal3mg):
     df = tmg
-    df = pd.merge(df, oyag, how="left", on="DISTRICT", suffixes=['tmg', 'oyag'])
-    df = pd.merge(df, l3mg, how="left", on="DISTRICT", suffixes=['oyag2', 'l3mg'])
-    df = pd.merge(df, oyal3mg, how="left", on="DISTRICT", suffixes=['l3mg2', 'oyal3m'])
+    df = pd.merge(df, oyag, how="left", on="BOROUGH", suffixes=['tmg', 'oyag'])
+    df = pd.merge(df, l3mg, how="left", on="BOROUGH", suffixes=['oyag2', 'l3mg'])
+    df = pd.merge(df, oyal3mg, how="left", on="BOROUGH", suffixes=['l3mg2', 'oyal3m'])
     return df
 
 '''
@@ -132,17 +179,15 @@ def my_round(number, decimals):
         return (round(round(number, decimals) * 100, decimals))
     except:
         return None
-def districts_cleanup(big_df, yyyy, mm):
+    
+def boro_cleanup(big_df, yyyy, mm):
     #create a filter that returns None if streets_cnt is null (or zero, which became null after aggregation)
     #this won't work aggregated. Need to do it before aggregation
     #st_cnt_filter = big_df['streets_cnttmg'].apply(lambda x: 1 if nullif(x) is not None else None)
     #sw_cnt_filter = big_df['sidewalks_cnttmg'].apply(lambda x: 1 if nullif(x) is not None else None)   
-    st_cnt_filter = 1
-    sw_cnt_filter = 1
     lambda_round = lambda x: my_round(x, 3)
     answer = pd.DataFrame()
-    answer['Borough'] = big_df.BOROUGHtmg
-    answer['District']	= big_df.DISTRICT
+    answer['Borough'] = big_df.BOROUGH
     #answe['.']DistrictNo = 	
     answer['Month'] =  str(yyyy) + pad_month(mm)
     answer['PercentAcceptablyCleanStreets'] = 	((big_df.streets_acceptable_milestmg / big_df.linear_milestmg)).astype('float')  
@@ -172,5 +217,6 @@ def districts_cleanup(big_df, yyyy, mm):
     answer['ThreeMonthAveragePercentCleanSidewalks'] = answer['ThreeMonthAveragePercentCleanSidewalks'].apply(lambda_round)  
     answer['ChangeIn3MonthAverageCleanStreets'] = answer['ChangeIn3MonthAverageCleanStreets'].apply(lambda_round)  
     answer['ChangeIn3MonthAverageCleanSidewalks'] = answer['ChangeIn3MonthAverageCleanSidewalks'].apply(lambda_round) 
-    answer.to_csv('districts_answer.csv')
+    
+    answer.to_csv('boro_answer.csv')
     return answer
