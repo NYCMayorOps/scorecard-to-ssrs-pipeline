@@ -15,7 +15,6 @@ pd.options.mode.chained_assignment = 'warn'
 def scorecard_sections(fd, yyyy, mm, is_one_month=True):
     #print(f"fulcrum data info:")
     #print(fd.info())
-    
     fd = load_fulcrum_data(fd, yyyy, mm, is_one_month)
     this_agg = aggregate(fd)
     a = merge_linear_miles(this_agg)
@@ -41,7 +40,9 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None)
     fd['my_date2'] = pd.to_datetime(fd['_updated_at'], format='%Y-%m-%d %H:%M:%S')
     #have to truncate the day and time from my_date for equality comparison with other datetimes (yyyy-mm).
     fd['my_date'] = fd['my_date2'].apply(lambda x: datetime.strptime(datetime.strftime(x, '%Y-%m'), '%Y-%m'))
-    next_month = datetime.strptime(f"{yyyy}-{mm +1}", '%Y-%m')
+    this_month = f"{yyyy}-{mm}"
+    this_month_dt = datetime.strptime(this_month, '%Y-%m')
+    next_month = this_month_dt + relativedelta(months=1)
     this_date = next_month - relativedelta(days=1)
     #print(f"this date: {this_date}")
     start_date = datetime.strptime(f'{yyyy}-{mm}', '%Y-%m')
