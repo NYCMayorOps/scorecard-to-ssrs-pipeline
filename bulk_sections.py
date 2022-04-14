@@ -107,7 +107,7 @@ if __name__ == '__main__':
     
     crosswalk = pd.read_csv('scorecard_v1_bds_crosswalk.csv')
     scorecard_irm = pd.merge(scorecard_irm, crosswalk, how='inner', on='BoroDistrictSection' )
-    scorecard_irm.to_csv("scorecard_irm_pre_output.csv")
+    #scorecard_irm.to_csv("scorecard_irm_pre_output.csv")
     #create new dataframe
     scorecard_irm_xform = pd.DataFrame()
     scorecard_irm_xform['_project_id'] =         None 
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     scorecard_irm_xform['street_4'] =            scorecard_irm['ST Segment 4'] 
     scorecard_irm_xform['sidewalk_4'] =          scorecard_irm['SW Segment 4'] 
     scorecard_irm_xform['LogTime'] =             scorecard_irm['LastUpdateDate'] 
-    scorecard_irm_xform.to_csv('scorecard_irm.csv')
+    #scorecard_irm_xform.to_csv('scorecard_irm.csv')
     print("##### answer #####")
     scorecard_all = pd.concat([scorecard_irm_xform, scorecard_both], ignore_index=True )
     start_month=1

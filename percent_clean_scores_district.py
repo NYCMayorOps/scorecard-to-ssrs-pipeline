@@ -32,7 +32,7 @@ def scorecard_districts(fd, yyyy, mm):
     dclean['Borough'] = dclean['Borough_y']
     dclean.drop(['Borough_x', 'Borough_y'], axis=1, inplace=True)
     dclean.insert(0, 'Borough', dclean.pop('Borough'))
-    dclean.to_csv('answer_district.csv')
+    #dclean.to_csv('answer_district.csv')
     return dclean
 
 
@@ -172,5 +172,5 @@ def districts_cleanup(big_df, yyyy, mm):
     answer['ThreeMonthAveragePercentCleanSidewalks'] = answer['ThreeMonthAveragePercentCleanSidewalks'].apply(lambda_round)  
     answer['ChangeIn3MonthAverageCleanStreets'] = answer['ChangeIn3MonthAverageCleanStreets'].apply(lambda_round)  
     answer['ChangeIn3MonthAverageCleanSidewalks'] = answer['ChangeIn3MonthAverageCleanSidewalks'].apply(lambda_round) 
-    answer.to_csv('districts_answer.csv')
+    #answer.to_csv('districts_answer.csv')
     return answer
