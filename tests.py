@@ -3,7 +3,8 @@ import unittest
 import pandas as pd
 from percent_clean_scores_section import scorecard_sections
 from percent_clean_scores_district import scorecard_districts
-from percent_clean_scores_boro import scorecard_boro
+from percent_clean_scores_boro import scorecard_boros
+from percent_clean_scores_bid import scorecard_bids
 from connector import Connector
 
 connector = Connector
@@ -39,5 +40,14 @@ class TestClass(unittest.TestCase):
         pd.testing.assert_frame_equal(expected, actual)
         print("percent clean scores borough passed.")
     '''
+    def test_percent_clean_scores_bid(var):
+        df = connector.fd_bids_mock
+        actual = scorecard_bids(df, 2022, 1)
+        actual = actual.sort_values('bid_name')
+        actual = actual.reset_index(drop=True)
+        expected = pd.read_csv('dd_bid_2022Q1.csv').sort_values('bid_name')
+        expected = expected.reset_index(drop=True)
+        pd.testing.assert_frame_equal(expected, actual)
+
 if __name__ == "__main__":
     unittest.main()

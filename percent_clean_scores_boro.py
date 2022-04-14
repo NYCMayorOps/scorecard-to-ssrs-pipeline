@@ -8,7 +8,7 @@ connector=Connector()
 district = pd.read_csv('district.csv')
 pad_month= lambda x: str(x) if (len(str(int(x))) == 2) else '0' + str(int(x))
 
-def scorecard_boro(fd, yyyy, mm):
+def scorecard_boros(fd, yyyy, mm):
     #find this month
     tm = pcss.scorecard_sections(fd, yyyy, mm, True)
     #find one year ago
@@ -218,5 +218,5 @@ def boro_cleanup(big_df, yyyy, mm):
     answer['ChangeIn3MonthAverageCleanStreets'] = answer['ChangeIn3MonthAverageCleanStreets'].apply(lambda_round)  
     answer['ChangeIn3MonthAverageCleanSidewalks'] = answer['ChangeIn3MonthAverageCleanSidewalks'].apply(lambda_round) 
     
-    answer.to_csv('boro_answer.csv')
+    #answer.to_csv('boro_answer.csv')
     return answer
