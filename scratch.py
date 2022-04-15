@@ -78,6 +78,7 @@ fd = pd.read_csv('fd_mock_all.csv')
 #print(pcss)
 
 #df = pcsd.scorecard_districts(fd, 2021, 11)
-fd = connector.fd_mock_bids
+fd = connector.fd_bids_mock
+print(fd.head(4))
 df = pcsbid.scorecard_bids(fd, 2022, 1)
 print(df.head(5))

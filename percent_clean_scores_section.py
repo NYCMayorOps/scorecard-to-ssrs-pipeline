@@ -175,16 +175,16 @@ def rating_calculation(a):
     #if count_rated is None, none times accept = none. 
     #lambda nullif turns 0 to None. 
     a['streets_acceptable_cnt'] = (nullif(a['st_count_rated']) / a['st_count_rated'] * a['st_count_accept'])
-    a['streets_acceptable_miles'] = round(a.st_count_accept / a.st_count_rated *  a.linear_miles , 3)
-    a['streets_filthy_miles'] = round(a.st_count_filthy / a.st_count_rated *  a.linear_miles , 3)
+    a['streets_acceptable_miles'] = (a.st_count_accept / a.st_count_rated *  a.linear_miles)
+    a['streets_filthy_miles'] = (a.st_count_filthy / a.st_count_rated *  a.linear_miles)
     a['streets_filthy_cnt'] = nullif(a['st_count_rated']) / a['st_count_rated'] * a['st_count_filthy']
-    a['sidewalk_rating_avg'] = nullif(round(a.sw_rate_avg, 3))
+    a['sidewalk_rating_avg'] = nullif((a.sw_rate_avg))
     #a['sidewalks_cnt'] = a['sw_count_rated'].apply(none_if_na_else_1)
     a['sidewalks_acceptable_cnt'] = (nullif(a['sw_count_rated']) / a['sw_count_rated'] * a['sw_count_accept'])
-    a['sidewalks_acceptable_miles'] = round(a.sw_count_accept / a.sw_count_rated *  a.linear_miles , 3)
-    a['sidewalks_filthy_miles'] = round(a.sw_count_filthy / a.sw_count_rated *  a.linear_miles , 3)
+    a['sidewalks_acceptable_miles'] = (a.sw_count_accept / a.sw_count_rated *  a.linear_miles)
+    a['sidewalks_filthy_miles'] = (a.sw_count_filthy / a.sw_count_rated *  a.linear_miles)
     a['sidewalks_filthy_cnt'] =  nullif(a['sw_count_rated']) / a['sw_count_rated'] * a['sw_count_filthy']
-    a['linear_miles'] = round(a['linear_miles'], 3)
+    a['linear_miles'] = (a['linear_miles'])
     #a.to_csv('rating_calculation.csv')
     return a
 
@@ -235,16 +235,16 @@ def final_format(a):
     df['STREET_RATING_AVG'] = a.st_rate_avg.round(3)
     df['STREETS_CNT'] = a.st_count
     df['STREETS_ACCEPTABLE_CNT'] = a.streets_acceptable_cnt
-    df['STREETS_ACCEPTABLE_MILES'] = a.streets_acceptable_miles
-    df['STREETS_FILTHY_MILES'] = a.streets_filthy_miles
+    df['STREETS_ACCEPTABLE_MILES'] = a.streets_acceptable_miles.round(3)
+    df['STREETS_FILTHY_MILES'] = a.streets_filthy_miles.round(3)
     df['STREETS_FILTHY_CNT'] = a.streets_filthy_cnt
     df['SIDEWALKS_RATING_AVG'] = a.sw_rate_avg.round(3)
     df['SIDEWALKS_CNT'] = a.sw_count
     df['SIDEWALKS_ACCEPTABLE_CNT'] = a.sidewalks_acceptable_cnt
-    df['SIDEWALKS_ACCEPTABLE_MILES'] = a.sidewalks_acceptable_miles
+    df['SIDEWALKS_ACCEPTABLE_MILES'] = a.sidewalks_acceptable_miles.round(3)
     df['SIDEWALKS_FILTHY_CNT'] = a.sidewalks_filthy_cnt
-    df['SIDEWALKS_FILTHY_MILES'] = a.sidewalks_filthy_miles
-    df['LINEAR_MILES'] = a.linear_miles
+    df['SIDEWALKS_FILTHY_MILES'] = a.sidewalks_filthy_miles.round(3)
+    df['LINEAR_MILES'] = a.linear_miles.round(3)
     #SECTION,MONTH,STREET_RATING_AVG,STREETS_CNT,STREETS_ACCEPTABLE_CNT,STREETS_ACCEPTABLE_MILES,STREETS_FILTHY_MILES,STREETS_FILTHY_CNT,SIDEWALK_RATING_AVG,SIDEWALKS_CNT,SIDEWALKS_ACCEPTABLE_CNT,SIDEWALKS_ACCEPTABLE_MILES,SIDEWALKS_FILTHY_CNT,SIDEWALKS_FILTHY_MILES,LINEAR_MILES,BULK_STREET_RATING_AVG,BULK_SIDEWALK_RATING_AVG,BULK_STREETS_CNT,BULK_SIDEWALKS_CNT
     #df.to_csv("answer.csv")
     return df
