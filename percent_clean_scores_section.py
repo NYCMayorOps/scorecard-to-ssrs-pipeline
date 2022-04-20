@@ -122,7 +122,7 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None)
     return fd
 
 #nullif lambda function (global scope)
-nullif = lambda x: x if x > 0 else None
+nullif = lambda x: x if x > 0 else np.nan
 
 def aggregate(fd):
    
@@ -150,41 +150,44 @@ def merge_linear_miles(this_agg, connector):
         return this_agg
     #add linear miles
     lm = connector.linear_miles
-    lm['linear_miles'] = lm['LINEAR_MILES']
+    lm['linear_miles'] = lm['LINEAR_MILES'].astype(float)
     lm['section_no'] = lm['SECTION']
     this_agg = this_agg.merge(lm, how='right', on='section_no' )
     #you have to get rid of linear miles on null or zero street counts because linear miles are aggregated for the calculation.
     #section is the lowest level of aggregation with linear miles. It is the correct level to filter linear miles.
     this_agg_copy = this_agg.copy()
     for index, row in this_agg_copy.iterrows():
-        if nullif(row['st_count_rated']) is None:
-            this_agg.at[index, 'LINEAR_MILES'] = None
-            this_agg.at[index, 'linear_miles'] = None
-    this_agg.to_csv('this_agg.csv')
+        if nullif(row['st_count_rated']) is np.nan:
+            this_agg.at[index, 'LINEAR_MILES'] = np.nan
+            this_agg.at[index, 'linear_miles'] = np.nan
+    #this_agg.to_csv('this_agg.csv')
     return this_agg
 
 def rating_calculation(a):
     if len(a.index) == 0:
         raise Exception ('where is input for rating calculation?')
-    #print(a.info())
     #a['month'] = a['currentyear'] * 100 + a['currentmonth']
     a['street_rating_average'] = round(a['st_rate_avg'], 3)
     #a['streets_cnt'] = a['st_count_rated'].apply(none_if_na_else_1)
-    nullif = lambda x: np.nan if x is 0 else x
+    nullif = lambda x: x if x > 0 else np.nan 
     #in sql, you would check if the st_count_rated was null by dividing count rated by count rated.
     #if count_rated is None, none times accept = none. 
-    #lambda nullif turns 0 to None. 
-    a['streets_acceptable_cnt'] = (nullif(a['st_count_rated']) / a['st_count_rated'] * a['st_count_accept'])
-    a['streets_acceptable_miles'] = (a.st_count_accept / a.st_count_rated *  a.linear_miles)
-    a['streets_filthy_miles'] = (a.st_count_filthy / a.st_count_rated *  a.linear_miles)
-    a['streets_filthy_cnt'] = nullif(a['st_count_rated']) / a['st_count_rated'] * a['st_count_filthy']
-    a['sidewalk_rating_avg'] = nullif((a.sw_rate_avg))
+    #lambda nullif turns 0 to None.
+    a.st_count_rated = a.st_count_rated.apply(nullif) 
+    a.sw_count_rated = a.sw_count_rated.apply(nullif)
+    a.linear_miles = a.linear_miles.astype(float)
+
+    a['streets_acceptable_cnt'] = (((a.st_count_rated) / a.st_count_rated) * a.st_count_accept)
+    a['streets_acceptable_miles'] = a.st_count_accept / (a.st_count_rated) *  a.linear_miles
+    a['streets_filthy_miles'] = ((a.st_count_filthy / (a.st_count_rated)) *  a.linear_miles)
+    a['streets_filthy_cnt'] = ((a.st_count_rated) / a.st_count_rated) * a.st_count_filthy
+    a['sidewalk_rating_avg'] = ((a.sw_rate_avg))
     #a['sidewalks_cnt'] = a['sw_count_rated'].apply(none_if_na_else_1)
-    a['sidewalks_acceptable_cnt'] = (nullif(a['sw_count_rated']) / a['sw_count_rated'] * a['sw_count_accept'])
-    a['sidewalks_acceptable_miles'] = (a.sw_count_accept / a.sw_count_rated *  a.linear_miles)
-    a['sidewalks_filthy_miles'] = (a.sw_count_filthy / a.sw_count_rated *  a.linear_miles)
-    a['sidewalks_filthy_cnt'] =  nullif(a['sw_count_rated']) / a['sw_count_rated'] * a['sw_count_filthy']
-    a['linear_miles'] = (a['linear_miles'])
+    a['sidewalks_acceptable_cnt'] = ((a.sw_count_rated) / a.sw_count_rated) * a.sw_count_accept
+    a['sidewalks_acceptable_miles'] = ((a.sw_count_accept / (a.sw_count_rated)) *  a.linear_miles)
+    a['sidewalks_filthy_miles'] = ((a.sw_count_filthy / (a.sw_count_rated)) *  a.linear_miles)
+    a['sidewalks_filthy_cnt'] =  ((a.sw_count_rated) / a.sw_count_rated) * a.sw_count_filthy
+    a['linear_miles'] = ((a.st_count_rated) / a.st_count_rated) * (a.linear_miles)
     #a.to_csv('rating_calculation.csv')
     return a
 
@@ -199,7 +202,7 @@ def merge_district(a, connector):
     month_zero = (a['currentyear'] * 100 + a['currentmonth']).fillna('0')
     month_zero_int = month_zero.astype(int)
     a['month'] = month_zero_int.map(lambda x: None if x == 0 else x)
-    a.to_csv('merge_districts.csv')
+    #a.to_csv('merge_districts.csv')
     return a
 
 

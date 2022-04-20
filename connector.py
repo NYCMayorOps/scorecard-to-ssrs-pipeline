@@ -43,12 +43,14 @@ class Connector:
 
     #get linear miles
     def get_linear_miles(self):
-        return pd.read_sql(f"SELECT * FROM [dbo].[LinearMiles];", self.conn)
-
+        answer =  pd.read_sql(f"SELECT * FROM [dbo].[LinearMiles];", self.conn)
+        answer.LINEAR_MILES = answer.LINEAR_MILES.astype(float)
+        return answer
     #get bid linear miles
     def get_bid_linear_miles(self):
-        return pd.read_sql(f"SELECT * FROM [dbo].[bid_linear_miles];", self.conn)
-
+        answer = pd.read_sql(f"SELECT * FROM [dbo].[bid_linear_miles];", self.conn)
+        answer.linear_miles = answer.linear_miles.astype(float)
+        return answer
     #get districts
     def get_district(self):
         return pd.read_sql(f"SELECT * FROM [dbo].[District];", self.conn)

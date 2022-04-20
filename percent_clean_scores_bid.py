@@ -11,7 +11,7 @@ def scorecard_bids(fd, yyyy, quarter, connector):
     #print(f"fulcrum data info:")
     #print(fd.info())
     #find this month
-    mm = None
+    mm = np.nan
     print("tm")
     if quarter == 1:
         mm = 3
@@ -84,8 +84,8 @@ def merge_linear_miles(this_agg, connector):
     #section is the lowest level of aggregation with linear miles. It is the correct level to filter linear miles.
     this_agg_copy = this_agg.copy()
     for index, row in this_agg_copy.iterrows():
-        if nullif(row['st_count_rated']) is None:
-            this_agg.at[index, 'linear_miles'] = None
+        if nullif(row['st_count_rated']) is np.nan:
+            this_agg.at[index, 'linear_miles'] = np.nan
     this_agg.to_csv('bid_agg.csv')
     return this_agg
 

@@ -16,7 +16,7 @@ print("############################################################")
 class TestClass(unittest.TestCase):
 
     connector = Connector()
-
+    
     def test_connection(self):
         assert(len(self.connector.fd) > 2)
         assert(len(self.connector.linear_miles) > 2)
@@ -44,7 +44,7 @@ class TestClass(unittest.TestCase):
         expected['Month'] = expected['Month'].astype('str')
         pd.testing.assert_frame_equal(expected, actual)
         print("test percent clean scores district passed.")
-        print("")
+  
     
     '''
     def test_percent_clean_scores_boro(self):
@@ -66,12 +66,14 @@ class TestClass(unittest.TestCase):
         expected = pd.read_csv('dd_bid_2022Q1.csv').sort_values('bid_name')
         expected = expected.reset_index(drop=True)
         pd.testing.assert_frame_equal(expected, actual)
-    '''
+        print("test_percent_clean_scores_bid passed")
+    
     def test_percent_clean_scores_bid_citywide(self):
         df = self.connector.fd_bids_mock
         actual = scorecard_bids_citywide(df, 2022, 1, self.connector)
         expected = pd.read_csv('dd_bid_citywide_2022Q1.csv')
         pd.testing.assert_frame_equal(expected, actual)
-    '''
+        print("test_percent_clean_scores_bid_citywide passed")
+    
 if __name__ == "__main__":
     unittest.main()
