@@ -2,8 +2,8 @@ import pandas as pd
 from percent_clean_scores_bid import scorecard_bids
 import numpy as np
 
-def scorecard_bids_citywide(fd, yyyy, quarter):
-    df = scorecard_bids(fd, yyyy, quarter)
+def scorecard_bids_citywide(fd, yyyy, quarter, connector):
+    df = scorecard_bids(fd, yyyy, quarter, connector)
     df['bid_id'] = 'Citywide'
     this_agg = df.groupby(['bid_id', 'quarter']).agg(st_acceptable_miles=('streets_acceptable_miles', np.sum),
                                                      sw_acceptable_miles=('sidewalks_acceptable_miles', np.sum),

@@ -3,21 +3,20 @@ import pandas as pd
 import numpy as np
 from connector import Connector
 
-connector = Connector
 
 
-district = connector.district
+
 pad_month= lambda x: str(x) if (len(str(int(x))) == 2) else '0' + str(int(x))
 
-def scorecard_districts(fd, yyyy, mm):
+def scorecard_districts(fd, yyyy, mm, connector):
     #find this month
-    tm = pcss.scorecard_sections(fd, yyyy, mm, True)
+    tm = pcss.scorecard_sections(fd, yyyy, mm, connector, True)
     #find one year ago
-    oya = pcss.scorecard_sections(fd, int(yyyy - 1), mm, True)
+    oya = pcss.scorecard_sections(fd, int(yyyy - 1), mm, connector, True)
     #find last three months
-    l3m = pcss.scorecard_sections(fd, yyyy, mm, False)
+    l3m = pcss.scorecard_sections(fd, yyyy, mm, connector, False)
     #find last three months one year ago
-    oyal3m = pcss.scorecard_sections(fd, int(yyyy - 1), mm, False)
+    oyal3m = pcss.scorecard_sections(fd, int(yyyy - 1), mm, connector, False)
     #group by district
     #print(oya.info())
     tmg = group_by_district(tm)
@@ -27,12 +26,16 @@ def scorecard_districts(fd, yyyy, mm):
     #calculate percent changes.
     big_combine = final_district_df_combine(tmg, oyag, l3mg, oyal3mg)
     dclean =  districts_cleanup(big_combine, yyyy, mm)
-    dclean =  pd.merge(dclean, district, how='right', on='District' )
+    dclean =  pd.merge(dclean, connector.district, how='right', on='District' )
     dclean['Month'] = dclean['Month'].apply(lambda x: str(yyyy) + pad_month(mm))
-    dclean['Borough'] = dclean['Borough_y']
-    dclean.drop(['Borough_x', 'Borough_y'], axis=1, inplace=True)
+    #dclean['Borough'] = dclean['Borough_y']
+    #dclean.drop(['Borough_x', 'Borough_y'], axis=1, inplace=True)
     dclean.insert(0, 'Borough', dclean.pop('Borough'))
-    #dclean.to_csv('answer_district.csv')
+    del dclean['district_no']
+    dclean.reset_index(drop=True, inplace=True)
+    dclean.to_csv('answer_district.csv')
+
+    
     return dclean
 
 
@@ -125,7 +128,7 @@ def final_district_df_combine(tmg, oyag, l3mg, oyal3mg):
  55  sidewalks_filthy_milesoyal3m      4 non-null      float64
  56  linear_milesoyal3m                4 non-null      float64'''
 
-nullif = lambda x: None if x <= 0.0000001 else x
+nullif = lambda x: np.nan if x <= 0.0000001 else x
 
 def my_round(number, decimals):
     try: 
@@ -171,6 +174,10 @@ def districts_cleanup(big_df, yyyy, mm):
     answer['ThreeMonthAveragePercentCleanStreets']	= answer['ThreeMonthAveragePercentCleanStreets'].apply(lambda_round) 	
     answer['ThreeMonthAveragePercentCleanSidewalks'] = answer['ThreeMonthAveragePercentCleanSidewalks'].apply(lambda_round)  
     answer['ChangeIn3MonthAverageCleanStreets'] = answer['ChangeIn3MonthAverageCleanStreets'].apply(lambda_round)  
-    answer['ChangeIn3MonthAverageCleanSidewalks'] = answer['ChangeIn3MonthAverageCleanSidewalks'].apply(lambda_round) 
+    answer['ChangeIn3MonthAverageCleanSidewalks'] = answer['ChangeIn3MonthAverageCleanSidewalks'].apply(lambda_round)
+    #stray index left over.
+    answer.reset_index(inplace=True, drop=True)
+    del answer[answer.columns[0]]
+    #
     #answer.to_csv('districts_answer.csv')
     return answer

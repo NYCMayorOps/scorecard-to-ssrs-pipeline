@@ -12,14 +12,14 @@ from dateutil.relativedelta import relativedelta
 pd.options.mode.chained_assignment = 'warn'
 
 #formerly know as scout_v2_fulcrum_export_cpr in SQL
-def scorecard_sections(fd, yyyy, mm, is_one_month=True):
+def scorecard_sections(fd, yyyy, mm, connector, is_one_month=True,):
     #print(f"fulcrum data info:")
     #print(fd.info())
     fd = load_fulcrum_data(fd, yyyy, mm, is_one_month)
     this_agg = aggregate(fd)
-    a = merge_linear_miles(this_agg)
+    a = merge_linear_miles(this_agg, connector)
     a = rating_calculation(a)
-    a = merge_district(a)
+    a = merge_district(a, connector)
     answer = final_format(a)
     return answer
 #for multimonth
@@ -145,11 +145,11 @@ def aggregate(fd):
     this_agg['sw_count_rated'] = this_agg['sw_count_rated'].apply(nullif)
     return this_agg
 
-def merge_linear_miles(this_agg):  
+def merge_linear_miles(this_agg, connector):  
     if len(this_agg.index) == 0:
         return this_agg
     #add linear miles
-    lm = pd.read_csv('linear_miles.csv')
+    lm = connector.linear_miles
     lm['linear_miles'] = lm['LINEAR_MILES']
     lm['section_no'] = lm['SECTION']
     this_agg = this_agg.merge(lm, how='right', on='section_no' )
@@ -165,12 +165,12 @@ def merge_linear_miles(this_agg):
 
 def rating_calculation(a):
     if len(a.index) == 0:
-        return a
+        raise Exception ('where is input for rating calculation?')
     #print(a.info())
     #a['month'] = a['currentyear'] * 100 + a['currentmonth']
     a['street_rating_average'] = round(a['st_rate_avg'], 3)
     #a['streets_cnt'] = a['st_count_rated'].apply(none_if_na_else_1)
-    nullif = lambda x: None if x is 0 else x
+    nullif = lambda x: np.nan if x is 0 else x
     #in sql, you would check if the st_count_rated was null by dividing count rated by count rated.
     #if count_rated is None, none times accept = none. 
     #lambda nullif turns 0 to None. 
@@ -188,18 +188,18 @@ def rating_calculation(a):
     #a.to_csv('rating_calculation.csv')
     return a
 
-def merge_district(a):
+def merge_district(a, connector):
     if len(a.index) == 0:
         return a
     #need to left join district.
-    d = pd.read_csv('district.csv')
+    d = connector.district
     d['district_no'] = d['District']
     a = a.merge(d, how='left', on='district_no' )
     #need to add month back after merge.
     month_zero = (a['currentyear'] * 100 + a['currentmonth']).fillna('0')
     month_zero_int = month_zero.astype(int)
     a['month'] = month_zero_int.map(lambda x: None if x == 0 else x)
-    #a.to_csv('merge_districts.csv')
+    a.to_csv('merge_districts.csv')
     return a
 
 
