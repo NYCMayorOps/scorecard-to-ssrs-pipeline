@@ -172,7 +172,7 @@ def boro_df_combine(tmg, oyag, l3mg, oyal3mg):
  55  sidewalks_filthy_milesoyal3m      4 non-null      float64
  56  linear_milesoyal3m                4 non-null      float64'''
 
-nullif = lambda x: None if x <= 0.0000001 else x
+nullif = lambda x: x if x > 0 else np.nan 
 
 def my_round(number, decimals):
     try: 

@@ -25,15 +25,13 @@ def scorecard_bids(fd, yyyy, quarter, citywide=False):
         raise Exception("not a valid quarter")
     #from sections
     fd = pcss.load_fulcrum_data(fd, yyyy, mm, is_one_month = False)
-    if citywide == True:
-        this_agg = aggregate_citywide(fd)
-    else: 
-        this_agg = aggregate(fd)
-    a = merge_linear_miles(this_agg)
+
+    this_agg = aggregate(fd)
+    a = merge_linear_miles(this_agg, connector)
     a = pcss.rating_calculation(a)
     return cleanup(a, yyyy, quarter)
 #for multimonth
-nullif = lambda x: x if x > 0 else None
+nullif = lambda x: x if x > 0 else np.nan
 
 def aggregate(fd):
     #create quarter
