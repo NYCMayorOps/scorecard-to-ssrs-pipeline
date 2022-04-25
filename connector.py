@@ -17,15 +17,19 @@ class Connector:
     fd_bids_mock = pd.read_csv('fd_bids.csv')
     linear_miles= pd.DataFrame()
     district = pd.DataFrame() #pd.read_csv('district.csv')
-    bid_linear_miles = pd.DataFrame #pd.read_csv('bid_linear_miles.csv')
+    bid_linear_miles = pd.DataFrame() #pd.read_csv('bid_linear_miles.csv')
     conn = None
 
     def __init__(self):
         self.conn = self.db_connect()
+        print("connected to db")
         self.fd = self.get_fd_last_2_years()
         self.linear_miles = self.get_linear_miles()
+        assert (self.linear_miles.empty == False)
         self.bid_linear_miles = self.get_bid_linear_miles()
+        assert (self.bid_linear_miles.empty == False)
         self.district = self.get_district()
+        print("connection initialized")
 
     def db_connect(self):
         conn_str=os.getenv("CONNECTION_STRING_SQL_ALCHEMY")
