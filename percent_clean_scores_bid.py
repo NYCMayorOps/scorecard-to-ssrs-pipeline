@@ -3,7 +3,7 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import percent_clean_scores_section as pcss
 import numpy as np
-from connector import Connector
+import logging
 
 
 
@@ -53,7 +53,7 @@ def aggregate(fd):
     }
     for index, row in fd_copy.iterrows():
         fd.at[index, 'quarter'] = str(row['currentyear']) + month_to_quarter[row['currentmonth']]
-    fd['bid_id'] = fd['bid_identifier'].apply(lambda x: x.split('_')[-1])
+    fd['bid_id'] = fd['bid_identifier'].apply(lambda x: x.split('_')[-1] if x is not None else '')
     groupby_list = ['bid_id', 'quarter']
     this_agg = fd.groupby(groupby_list).agg(st_rate_avg=('st_mean', np.mean),
                                                                 st_count=('st_rated', np.sum),
@@ -75,7 +75,8 @@ def aggregate(fd):
 
 def merge_linear_miles(this_agg, connector):  
     if len(this_agg.index) == 0:
-        return this_agg
+        logging.warn("where is this_agg?")
+        #return this_agg
     #add linear miles
     lm = connector.bid_linear_miles
     assert(lm.empty == False)
@@ -93,19 +94,19 @@ def cleanup(a, yyyy, quarter):
     df = pd.DataFrame()
     df['bid_name'] = a.bid_human_name
     df['quarter'] = str(yyyy) + 'Q' + str(quarter)
-    df['street_rating_avg'] = a.street_rating_average.round(3) 
+    df['street_rating_avg'] = a.street_rating_average.astype(float).round(3) 
     df['streets_cnt'] = a.st_count
     df['streets_acceptable_cnt'] = a.st_count_accept
-    df['streets_acceptable_miles'] = a.streets_acceptable_miles.round(3)
+    df['streets_acceptable_miles'] = a.streets_acceptable_miles.astype(float).round(3)
     df['streets_filthy_cnt'] = a.streets_filthy_cnt
-    df['streets_filthy_miles'] = a.streets_filthy_miles.round(3)
-    df['sidewalk_rating_avg'] = a.sidewalk_rating_avg.round(3)
+    df['streets_filthy_miles'] = a.streets_filthy_miles.astype(float).round(3)
+    df['sidewalk_rating_avg'] = a.sidewalk_rating_avg.astype(float).round(3)
     df['sidewalks_cnt'] = a.sw_count
     df['sidewalks_acceptable_cnt'] = a.sidewalks_acceptable_cnt 
-    df['sidewalks_acceptable_miles'] = a.sidewalks_acceptable_miles.round(3)
+    df['sidewalks_acceptable_miles'] = a.sidewalks_acceptable_miles.astype(float).round(3)
     df['sidewalks_filthy_cnt'] = a.sidewalks_filthy_cnt
-    df['sidewalks_filthy_miles'] = a.sidewalks_filthy_miles.round(3)
-    df['linear_miles'] = a.linear_miles.round(3)
-    df['percent_acceptably_clean_streets'] = round(a.streets_acceptable_miles / a.linear_miles, 3)
-    df['percent_acceptably_clean_sidewalks'] = round(a.sidewalks_acceptable_miles / a.linear_miles, 3)
+    df['sidewalks_filthy_miles'] = a.sidewalks_filthy_miles.astype(float).round(3)
+    df['linear_miles'] = a.linear_miles.astype(float).round(3)
+    df['percent_acceptably_clean_streets'] = (a.streets_acceptable_miles / a.linear_miles).astype(float).round(3)
+    df['percent_acceptably_clean_sidewalks'] = (a.sidewalks_acceptable_miles / a.linear_miles).astype(float).round(3)
     return df                                        

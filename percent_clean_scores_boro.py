@@ -3,20 +3,18 @@ import pandas as pd
 import numpy as np
 from connector import Connector
 
-connector=Connector()
 
-district = pd.read_csv('district.csv')
 pad_month= lambda x: str(x) if (len(str(int(x))) == 2) else '0' + str(int(x))
 
-def scorecard_boros(fd, yyyy, mm):
+def scorecard_boros(fd, yyyy, mm, connector):
     #find this month
-    tm = pcss.scorecard_sections(fd, yyyy, mm, True)
+    tm = pcss.scorecard_sections(fd, yyyy, mm, connector, True)
     #find one year ago
-    oya = pcss.scorecard_sections(fd, int(yyyy - 1), mm, True)
+    oya = pcss.scorecard_sections(fd, int(yyyy - 1), mm, connector, True)
     #find last three months
-    l3m = pcss.scorecard_sections(fd, yyyy, mm, False)
+    l3m = pcss.scorecard_sections(fd, yyyy, mm, connector, False)
     #find last three months one year ago
-    oyal3m = pcss.scorecard_sections(fd, int(yyyy - 1), mm, False)
+    oyal3m = pcss.scorecard_sections(fd, int(yyyy - 1), mm, connector, False)
     #group by district
     #print(oya.info())
     tmg = group_by_boro(tm)
@@ -35,15 +33,15 @@ def scorecard_boros(fd, yyyy, mm):
     #dclean.to_csv('answer_boro.csv')
     return dclean
 
-def scorecard_citywide(fd, yyyy, mm):
+def scorecard_citywide(fd, yyyy, mm, connector):
     #find this month
-    tm = pcss.scorecard_sections(fd, yyyy, mm, True)
+    tm = pcss.scorecard_sections(fd, yyyy, mm, connector, True)
     #find one year ago
-    oya = pcss.scorecard_sections(fd, int(yyyy - 1), mm, True)
+    oya = pcss.scorecard_sections(fd, int(yyyy - 1), mm, connector, True)
     #find last three months
-    l3m = pcss.scorecard_sections(fd, yyyy, mm, False)
+    l3m = pcss.scorecard_sections(fd, yyyy, mm, connector, False)
     #find last three months one year ago
-    oyal3m = pcss.scorecard_sections(fd, int(yyyy - 1), mm, False)
+    oyal3m = pcss.scorecard_sections(fd, int(yyyy - 1), mm, connector, False)
     #group by district
     #print(oya.info())
     tmg = group_by_citywide(tm)

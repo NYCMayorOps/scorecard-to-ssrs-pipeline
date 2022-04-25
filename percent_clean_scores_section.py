@@ -8,8 +8,9 @@ import numpy as np
 from pandas import testing
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+import logging
 
-pd.options.mode.chained_assignment = 'warn'
+#pd.options.mode.chained_assignment = 'warn'
 
 #formerly know as scout_v2_fulcrum_export_cpr in SQL
 def scorecard_sections(fd, yyyy, mm, connector, is_one_month=True,):
@@ -29,7 +30,7 @@ def mean_calc(one, two, three, four):
     zero_if_null = lambda x: 0 if pd.isna(x) else x
     count_me = sum([1 if pd.isna(x) == False else 0 for x in [one, two, three, four]])
     if count_me == 0:
-        return None
+        return np.nan
     return ((zero_if_null(one) + zero_if_null(two) + zero_if_null(three) + zero_if_null(four)) / count_me )
 
 
@@ -124,8 +125,7 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, end_year=None, end_month=None)
 #nullif lambda function (global scope)
 nullif = lambda x: x if x > 0 else np.nan
 
-def aggregate(fd):
-   
+def aggregate(fd):   
     groupby_list = ['currentmonth', 'currentyear','section_no', 'district_no','borough']
     this_agg = fd.groupby(groupby_list).agg(st_rate_avg=('st_mean', np.mean),
                                                                 st_count=('st_rated', np.sum),
@@ -147,7 +147,8 @@ def aggregate(fd):
 
 def merge_linear_miles(this_agg, connector):  
     if len(this_agg.index) == 0:
-        return this_agg
+        pass
+        #return this_agg
     #add linear miles
     lm = connector.linear_miles
     lm['linear_miles'] = lm['LINEAR_MILES'].astype(float)
@@ -165,10 +166,8 @@ def merge_linear_miles(this_agg, connector):
 
 def rating_calculation(a):
     if len(a.index) == 0:
-        raise Exception ('where is input for rating calculation?')
-    #a['month'] = a['currentyear'] * 100 + a['currentmonth']
-    a['street_rating_average'] = round(a['st_rate_avg'], 3)
-    #a['streets_cnt'] = a['st_count_rated'].apply(none_if_na_else_1)
+        logging.warn('where is input for rating calculation?')
+    a['street_rating_average'] = a['st_rate_avg'].astype(float).round(3)
     nullif = lambda x: x if x > 0 else np.nan 
     #in sql, you would check if the st_count_rated was null by dividing count rated by count rated.
     #if count_rated is None, none times accept = none. 
@@ -235,19 +234,19 @@ def final_format(a):
     df['SECTION'] = a.section_no
     #the month will be determined by query not realitiy
     df['MONTH'] = a['month']
-    df['STREET_RATING_AVG'] = a.st_rate_avg.round(3)
+    df['STREET_RATING_AVG'] = a.st_rate_avg.astype(float).round(3)
     df['STREETS_CNT'] = a.st_count
     df['STREETS_ACCEPTABLE_CNT'] = a.streets_acceptable_cnt
-    df['STREETS_ACCEPTABLE_MILES'] = a.streets_acceptable_miles.round(3)
-    df['STREETS_FILTHY_MILES'] = a.streets_filthy_miles.round(3)
+    df['STREETS_ACCEPTABLE_MILES'] = a.streets_acceptable_miles.astype(float).round(3)
+    df['STREETS_FILTHY_MILES'] = a.streets_filthy_miles.astype(float).round(3)
     df['STREETS_FILTHY_CNT'] = a.streets_filthy_cnt
-    df['SIDEWALKS_RATING_AVG'] = a.sw_rate_avg.round(3)
+    df['SIDEWALKS_RATING_AVG'] = a.sw_rate_avg.astype(float).round(3)
     df['SIDEWALKS_CNT'] = a.sw_count
     df['SIDEWALKS_ACCEPTABLE_CNT'] = a.sidewalks_acceptable_cnt
-    df['SIDEWALKS_ACCEPTABLE_MILES'] = a.sidewalks_acceptable_miles.round(3)
+    df['SIDEWALKS_ACCEPTABLE_MILES'] = a.sidewalks_acceptable_miles.astype(float).round(3)
     df['SIDEWALKS_FILTHY_CNT'] = a.sidewalks_filthy_cnt
-    df['SIDEWALKS_FILTHY_MILES'] = a.sidewalks_filthy_miles.round(3)
-    df['LINEAR_MILES'] = a.linear_miles.round(3)
+    df['SIDEWALKS_FILTHY_MILES'] = a.sidewalks_filthy_miles.astype(float).round(3)
+    df['LINEAR_MILES'] = a.linear_miles.astype(float).round(3)
     #SECTION,MONTH,STREET_RATING_AVG,STREETS_CNT,STREETS_ACCEPTABLE_CNT,STREETS_ACCEPTABLE_MILES,STREETS_FILTHY_MILES,STREETS_FILTHY_CNT,SIDEWALK_RATING_AVG,SIDEWALKS_CNT,SIDEWALKS_ACCEPTABLE_CNT,SIDEWALKS_ACCEPTABLE_MILES,SIDEWALKS_FILTHY_CNT,SIDEWALKS_FILTHY_MILES,LINEAR_MILES,BULK_STREET_RATING_AVG,BULK_SIDEWALK_RATING_AVG,BULK_STREETS_CNT,BULK_SIDEWALKS_CNT
     #df.to_csv("answer.csv")
     return df
