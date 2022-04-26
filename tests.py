@@ -3,7 +3,7 @@ import unittest
 import pandas as pd
 from percent_clean_scores_section import scorecard_sections
 from percent_clean_scores_district import scorecard_districts
-from percent_clean_scores_boro import scorecard_boros
+from percent_clean_scores_boro import scorecard_boros, scorecard_citywide
 from percent_clean_scores_bid import scorecard_bids
 from percent_clean_scores_bid_citywide import scorecard_bids_citywide
 from connector import Connector
@@ -46,15 +46,14 @@ class TestClass(unittest.TestCase):
         print("test percent clean scores district passed.")
   
     
-    '''
     def test_percent_clean_scores_boro(self):
         df = self.connector.fd_mock
-        actual = scorecard_boro(df, 2021, 11, self.connector)
+        actual = scorecard_boros(df, 2021, 11, self.connector)
         actual.to_csv('answer_boro.csv')
         expected = pd.read_csv('dd_boro_2021_11.csv')
+        expected.Month = expected.Month.astype(str)
         pd.testing.assert_frame_equal(expected, actual)
         print("percent clean scores borough passed.")
-    '''
     
     def test_percent_clean_scores_bid(self):
         df = self.connector.fd_bids_mock
@@ -74,6 +73,14 @@ class TestClass(unittest.TestCase):
         expected = pd.read_csv('dd_bid_citywide_2022Q1.csv')
         pd.testing.assert_frame_equal(expected, actual)
         print("test_percent_clean_scores_bid_citywide passed")
-    
+    '''
+    def test_percent_clean_scores_citywide(self):
+        df = self.connector.fd_mock
+        actual = scorecard_citywide(df, 2021, 11, self.connector)
+        expected = pd.read_csv('dd_citywide_2021_11.csv')
+        expected.Month = expected.Month.astype(str)
+        pd.testing.assert_frame_equal(expected, actual)
+        print("test_percent_clean_scores_citywide passed")
+    '''
 if __name__ == "__main__":
     unittest.main()

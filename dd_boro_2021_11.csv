@@ -1,6 +1,3 @@
-﻿Borough,Month,Percent_Acceptably_Clean_Streets,Percent_Filthy_Streets,Percent_Acceptably_Clean_Sidewalks,Percent_Filthy_Sidewalks
-MN,202111,,,,
-BX,202111,,,,
-BK,202111,100.000,0.000,93.750,0.000
-Q,202111,90.547,0.000,95.655,0.000
-SI,202111,,,,
+﻿Borough,Month,PercentAcceptablyCleanStreets,PercentFilthyStreets,PercentAcceptablyCleanSidewalks,PercentFilthySidewalks,ChangeInPercentCleanStreetsYearly,ChangeInPercentCleanSidewalksYearly,ThreeMonthAveragePercentCleanStreets,ThreeMonthAveragePercentCleanSidewalks,ChangeIn3MonthAverageCleanStreets,ChangeIn3MonthAverageCleanSidewalks
+Brooklyn,	202111,	100.0,	0.0,	93.8,	0.0,	0.0,	0.0,	81.9,	78.1	,	,
+Queens,	202111,	90.5," 0.0"," 95.7"," 0.0"," 25.7"," 30.2",	70.1,	78.4,	20.3,	11.2

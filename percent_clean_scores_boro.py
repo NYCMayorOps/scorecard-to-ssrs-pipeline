@@ -30,7 +30,9 @@ def scorecard_boros(fd, yyyy, mm, connector):
     #dclean['Borough'] = dclean['Borough_y']
     #dclean.drop(['Borough_x', 'Borough_y'], axis=1, inplace=True)
     #dclean.insert(0, 'Borough', dclean.pop('Borough'))
-    #dclean.to_csv('answer_boro.csv')
+
+    dclean = dclean.reset_index(drop=True)
+    dclean.to_csv('answer_boro.csv')
     return dclean
 
 def scorecard_citywide(fd, yyyy, mm, connector):
@@ -53,11 +55,15 @@ def scorecard_citywide(fd, yyyy, mm, connector):
     dclean =  boro_cleanup(big_combine, yyyy, mm)
     #not needed. All boros will always be present so no need to right join to a list of boroughs.
     #dclean =  pd.merge(dclean, district, how='right', on='District' )
-    dclean['Month'] = dclean['Month'].apply(lambda x: str(yyyy) + pad_month(mm))
+    dclean['Month'] = dclean['Month'].apply(lambda x: str(yyyy) + pad_month(mm)).astype(str)
     #dclean['Borough'] = dclean['Borough_y']
     #dclean.drop(['Borough_x', 'Borough_y'], axis=1, inplace=True)
     #dclean.insert(0, 'Borough', dclean.pop('Borough'))
-    #dclean.to_csv('answer_citywide.csv')
+ 
+    #drop the index brutally
+    #del dclean[dclean.columns[0]]
+    dclean =  dclean.reset_index(drop=True)
+    dclean.to_csv('answer_citywide.csv')
     return dclean
 
 def group_by_boro(df):
