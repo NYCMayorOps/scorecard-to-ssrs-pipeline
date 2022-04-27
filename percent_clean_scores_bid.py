@@ -5,6 +5,8 @@ import percent_clean_scores_section as pcss
 import numpy as np
 import logging
 
+#bids only recorded after 11-2021
+#
 
 
 def scorecard_bids(fd, yyyy, quarter, connector):
@@ -12,7 +14,6 @@ def scorecard_bids(fd, yyyy, quarter, connector):
     #print(fd.info())
     #find this month
     mm = np.nan
-    print("tm")
     if quarter == 1:
         mm = 3
     elif quarter == 2:
@@ -25,7 +26,6 @@ def scorecard_bids(fd, yyyy, quarter, connector):
         raise Exception("not a valid quarter")
     #from sections
     fd = pcss.load_fulcrum_data(fd, yyyy, mm, is_one_month = False)
-
     this_agg = aggregate(fd)
     a = merge_linear_miles(this_agg, connector)
     a = pcss.rating_calculation(a)
@@ -52,8 +52,10 @@ def aggregate(fd):
         12 : 'Q4'
     }
     for index, row in fd_copy.iterrows():
-        fd.at[index, 'quarter'] = str(row['currentyear']) + month_to_quarter[row['currentmonth']]
+        fd.at[index, 'quarter'] = str(int(row['currentyear'])) + month_to_quarter[row['currentmonth']]
+    #print(f"bid identifier: {set(fd['bid_identifier'])}")
     fd['bid_id'] = fd['bid_identifier'].apply(lambda x: x.split('_')[-1] if x is not None else '')
+    #print(f"bid id: {set(fd['bid_id'])}")
     groupby_list = ['bid_id', 'quarter']
     this_agg = fd.groupby(groupby_list).agg(st_rate_avg=('st_mean', np.mean),
                                                                 st_count=('st_rated', np.sum),
@@ -71,6 +73,7 @@ def aggregate(fd):
     this_agg['st_count_rated'] = this_agg['st_count_rated'].apply(nullif)
     this_agg['sw_count'] = this_agg['sw_count'].apply(nullif)
     this_agg['sw_count_rated'] = this_agg['sw_count_rated'].apply(nullif)
+    this_agg.to_csv('this_agg_bid.csv')
     return this_agg
 
 def merge_linear_miles(this_agg, connector):  
@@ -82,7 +85,7 @@ def merge_linear_miles(this_agg, connector):
     assert(lm.empty == False)
     this_agg = this_agg.merge(lm, how='right', on='bid_id' )
     #you have to get rid of linear miles on null or zero street counts because linear miles are aggregated for the calculation.
-    #section is the lowest level of aggregation with linear miles. It is the correct level to filter linear miles.
+    #we use linear miles on a bid basis, not the section basis.
     this_agg_copy = this_agg.copy()
     for index, row in this_agg_copy.iterrows():
         if nullif(row['st_count_rated']) is np.nan:

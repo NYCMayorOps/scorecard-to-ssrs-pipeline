@@ -73,7 +73,7 @@ class TestClass(unittest.TestCase):
         expected = pd.read_csv('dd_bid_citywide_2022Q1.csv')
         pd.testing.assert_frame_equal(expected, actual)
         print("test_percent_clean_scores_bid_citywide passed")
-    '''
+    
     def test_percent_clean_scores_citywide(self):
         df = self.connector.fd_mock
         actual = scorecard_citywide(df, 2021, 11, self.connector)
@@ -81,6 +81,6 @@ class TestClass(unittest.TestCase):
         expected.Month = expected.Month.astype(str)
         pd.testing.assert_frame_equal(expected, actual)
         print("test_percent_clean_scores_citywide passed")
-    '''
+    
 if __name__ == "__main__":
     unittest.main()
