@@ -21,8 +21,8 @@ def scorecard_districts(fd, yyyy, mm, connector):
     #print(oya.info())
     tmg = group_by_district(tm)
     oyag = group_by_district(oya)
-    l3mg = group_by_district(l3m)
-    oyal3mg = group_by_district(oyal3m)
+    l3mg = group_by_district_3_month(l3m)
+    oyal3mg = group_by_district_3_month(oyal3m)
     #calculate percent changes.
     big_combine = final_district_df_combine(tmg, oyag, l3mg, oyal3mg)
     dclean =  districts_cleanup(big_combine, yyyy, mm)
@@ -57,6 +57,41 @@ def group_by_district(df):
     df['cnt'] = df['streets_cnt'].apply(nullif)
     df['sidewalks_cnt'] = df['sidewalks_cnt'].apply(nullif)
     df.reset_index(inplace=True)
+    return df
+
+def group_by_district_3_month(df):
+    df = df.groupby(['MONTH', 'BOROUGH', 'DISTRICT']).agg( street_rating_avg=('STREET_RATING_AVG', np.mean),
+                                           streets_cnt=('STREETS_CNT', np.sum),
+                                           streets_acceptable_cnt=('STREETS_ACCEPTABLE_CNT', np.sum),
+                                           streets_acceptable_miles=('STREETS_ACCEPTABLE_MILES', np.sum),
+                                           streets_filthy_cnt=('STREETS_FILTHY_CNT', np.sum),
+                                           streets_filthy_miles=('STREETS_FILTHY_MILES', np.sum),
+                                           sidewalks_rating_avg=('SIDEWALKS_RATING_AVG', np.mean),
+                                           sidewalks_cnt=('SIDEWALKS_CNT', np.sum),
+                                           sidewalks_acceptable_cnt=('SIDEWALKS_ACCEPTABLE_CNT', np.sum),
+                                           sidewalks_acceptable_miles=('SIDEWALKS_ACCEPTABLE_MILES', np.sum),
+                                           sidewalks_filthy_cnt=('SIDEWALKS_FILTHY_CNT', np.sum),
+                                           sidewalks_filthy_miles=('SIDEWALKS_FILTHY_MILES', np.sum),
+                                           linear_miles=('LINEAR_MILES', np.sum)                                   
+                                        )
+    df = df.groupby(['BOROUGH', 'DISTRICT']).agg( street_rating_avg=('street_rating_avg', np.mean),
+                                           streets_cnt=('streets_cnt', np.sum),
+                                           streets_acceptable_cnt=('streets_acceptable_cnt', np.sum),
+                                           streets_acceptable_miles=('streets_acceptable_miles', np.sum),
+                                           streets_filthy_cnt=('streets_filthy_cnt', np.sum),
+                                           streets_filthy_miles=('streets_filthy_miles', np.sum),
+                                           sidewalks_rating_avg=('sidewalks_rating_avg', np.mean),
+                                           sidewalks_cnt=('sidewalks_cnt', np.sum),
+                                           sidewalks_acceptable_cnt=('sidewalks_acceptable_cnt', np.sum),
+                                           sidewalks_acceptable_miles=('sidewalks_acceptable_miles', np.sum),
+                                           sidewalks_filthy_cnt=('sidewalks_filthy_cnt', np.sum),
+                                           sidewalks_filthy_miles=('sidewalks_filthy_miles', np.sum),
+                                           linear_miles=('linear_miles', np.sum)                                   
+                                        )
+    df['cnt'] = df['streets_cnt'].apply(nullif)
+    df['sidewalks_cnt'] = df['sidewalks_cnt'].apply(nullif)
+    df.reset_index(inplace=True)
+    df.to_csv("three_month_agg.csv")
     return df
 
 

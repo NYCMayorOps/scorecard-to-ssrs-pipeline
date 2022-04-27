@@ -52,6 +52,7 @@ class TestClass(unittest.TestCase):
         actual.to_csv('answer_boro.csv')
         expected = pd.read_csv('dd_boro_2021_11.csv')
         expected.Month = expected.Month.astype(str)
+        expected.ChangeIn3MonthAverageCleanStreets = expected.ChangeIn3MonthAverageCleanStreets.astype(float)
         pd.testing.assert_frame_equal(expected, actual)
         print("percent clean scores borough passed.")
     

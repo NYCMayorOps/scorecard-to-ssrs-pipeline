@@ -19,8 +19,8 @@ def scorecard_boros(fd, yyyy, mm, connector):
     #print(oya.info())
     tmg = group_by_boro(tm)
     oyag = group_by_boro(oya)
-    l3mg = group_by_boro(l3m)
-    oyal3mg = group_by_boro(oyal3m)
+    l3mg = group_by_boro_3_month(l3m)
+    oyal3mg = group_by_boro_3_month(oyal3m)
     #calculate percent changes.
     big_combine = boro_df_combine(tmg, oyag, l3mg, oyal3mg)
     dclean =  boro_cleanup(big_combine, yyyy, mm)
@@ -48,8 +48,8 @@ def scorecard_citywide(fd, yyyy, mm, connector):
     #print(oya.info())
     tmg = group_by_citywide(tm)
     oyag = group_by_citywide(oya)
-    l3mg = group_by_citywide(l3m)
-    oyal3mg = group_by_citywide(oyal3m)
+    l3mg = group_by_citywide_3_month(l3m)
+    oyal3mg = group_by_citywide_3_month(oyal3m)
     #calculate percent changes.
     big_combine = boro_df_combine(tmg, oyag, l3mg, oyal3mg)
     dclean =  boro_cleanup(big_combine, yyyy, mm)
@@ -86,6 +86,46 @@ def group_by_boro(df):
     df.reset_index(inplace=True)
     return df
 
+def group_by_boro_3_month(df):
+    df = df.groupby(['MONTH', 'BOROUGH']).agg( street_rating_avg=('STREET_RATING_AVG', np.mean),
+                                           streets_cnt=('STREETS_CNT', np.sum),
+                                           streets_acceptable_cnt=('STREETS_ACCEPTABLE_CNT', np.sum),
+                                           streets_acceptable_miles=('STREETS_ACCEPTABLE_MILES', np.sum),
+                                           streets_filthy_cnt=('STREETS_FILTHY_CNT', np.sum),
+                                           streets_filthy_miles=('STREETS_FILTHY_MILES', np.sum),
+                                           sidewalks_rating_avg=('SIDEWALKS_RATING_AVG', np.mean),
+                                           sidewalks_cnt=('SIDEWALKS_CNT', np.sum),
+                                           sidewalks_acceptable_cnt=('SIDEWALKS_ACCEPTABLE_CNT', np.sum),
+                                           sidewalks_acceptable_miles=('SIDEWALKS_ACCEPTABLE_MILES', np.sum),
+                                           sidewalks_filthy_cnt=('SIDEWALKS_FILTHY_CNT', np.sum),
+                                           sidewalks_filthy_miles=('SIDEWALKS_FILTHY_MILES', np.sum),
+                                           linear_miles=('LINEAR_MILES', np.sum)                                   
+                                        )
+    df['percent_clean_streets_3m_'] = (df.streets_acceptable_miles / df.linear_miles).astype(float)
+    df['percent_clean_sidewalks_3m_'] = (df.sidewalks_acceptable_miles / df.linear_miles).astype(float)
+    df = df.groupby(['BOROUGH']).agg( street_rating_avg=('street_rating_avg', np.mean),
+                                           streets_cnt=('streets_cnt', np.sum),
+                                           streets_acceptable_cnt=('streets_acceptable_cnt', np.sum),
+                                           streets_acceptable_miles=('streets_acceptable_miles', np.sum),
+                                           streets_filthy_cnt=('streets_filthy_cnt', np.sum),
+                                           streets_filthy_miles=('streets_filthy_miles', np.sum),
+                                           sidewalks_rating_avg=('sidewalks_rating_avg', np.mean),
+                                           sidewalks_cnt=('sidewalks_cnt', np.sum),
+                                           sidewalks_acceptable_cnt=('sidewalks_acceptable_cnt', np.sum),
+                                           sidewalks_acceptable_miles=('sidewalks_acceptable_miles', np.sum),
+                                           sidewalks_filthy_cnt=('sidewalks_filthy_cnt', np.sum),
+                                           sidewalks_filthy_miles=('sidewalks_filthy_miles', np.sum),
+                                           linear_miles=('linear_miles', np.sum),
+                                           percent_clean_streets_3m_=('percent_clean_streets_3m_', np.mean),                                   
+                                           percent_clean_sidewalks_3m_=('percent_clean_sidewalks_3m_', np.mean)
+                                        )
+    df['cnt'] = df['streets_cnt'].apply(nullif)
+    df['sidewalks_cnt'] = df['sidewalks_cnt'].apply(nullif)
+    df.reset_index(inplace=True)
+    #df.to_csv("three_month_agg_boro.csv")
+    return df
+
+
 
 def group_by_citywide(df):
     df['BOROUGH'] = 'New York City'
@@ -103,6 +143,50 @@ def group_by_citywide(df):
                                            sidewalks_filthy_miles=('SIDEWALKS_FILTHY_MILES', np.sum),
                                            linear_miles=('LINEAR_MILES', np.sum)                                   
                                         )
+    df['cnt'] = df['streets_cnt'].apply(nullif)
+    df['sidewalks_cnt'] = df['sidewalks_cnt'].apply(nullif)
+    df.reset_index(inplace=True)
+    return df
+
+def group_by_citywide_3_month(df):
+    df['BOROUGH'] = 'New York City'
+    df = df.groupby(['BOROUGH', 'MONTH']).agg( street_rating_avg=('STREET_RATING_AVG', np.mean),
+                                           streets_cnt=('STREETS_CNT', np.sum),
+                                           streets_acceptable_cnt=('STREETS_ACCEPTABLE_CNT', np.sum),
+                                           streets_acceptable_miles=('STREETS_ACCEPTABLE_MILES', np.sum),
+                                           streets_filthy_cnt=('STREETS_FILTHY_CNT', np.sum),
+                                           streets_filthy_miles=('STREETS_FILTHY_MILES', np.sum),
+                                           sidewalks_rating_avg=('SIDEWALKS_RATING_AVG', np.mean),
+                                           sidewalks_cnt=('SIDEWALKS_CNT', np.sum),
+                                           sidewalks_acceptable_cnt=('SIDEWALKS_ACCEPTABLE_CNT', np.sum),
+                                           sidewalks_acceptable_miles=('SIDEWALKS_ACCEPTABLE_MILES', np.sum),
+                                           sidewalks_filthy_cnt=('SIDEWALKS_FILTHY_CNT', np.sum),
+                                           sidewalks_filthy_miles=('SIDEWALKS_FILTHY_MILES', np.sum),
+                                           linear_miles=('LINEAR_MILES', np.sum)                                   
+                                        )
+    
+    df['percent_clean_streets_3m_'] = (df.streets_acceptable_miles / df.linear_miles).astype(float)
+    df['percent_clean_sidewalks_3m_'] = (df.sidewalks_acceptable_miles / df.linear_miles).astype(float)
+    #print(df.head())
+    #df.to_csv('citywide_agg_1.csv')
+    df = df.groupby(['BOROUGH']).agg( street_rating_avg=('street_rating_avg', np.mean),
+                                           streets_cnt=('streets_cnt', np.sum),
+                                           streets_acceptable_cnt=('streets_acceptable_cnt', np.sum),
+                                           streets_acceptable_miles=('streets_acceptable_miles', np.sum),
+                                           streets_filthy_cnt=('streets_filthy_cnt', np.sum),
+                                           streets_filthy_miles=('streets_filthy_miles', np.sum),
+                                           sidewalks_rating_avg=('sidewalks_rating_avg', np.mean),
+                                           sidewalks_cnt=('sidewalks_cnt', np.sum),
+                                           sidewalks_acceptable_cnt=('sidewalks_acceptable_cnt', np.sum),
+                                           sidewalks_acceptable_miles=('sidewalks_acceptable_miles', np.sum),
+                                           sidewalks_filthy_cnt=('sidewalks_filthy_cnt', np.sum),
+                                           sidewalks_filthy_miles=('sidewalks_filthy_miles', np.sum),
+                                           linear_miles=('linear_miles', np.sum),
+                                           percent_clean_streets_3m_=('percent_clean_streets_3m_', np.mean),                                   
+                                           percent_clean_sidewalks_3m_=('percent_clean_sidewalks_3m_', np.mean)
+                                        )
+    #print(df.head())
+    #df.to_csv('citywide_agg_2.csv')
     df['cnt'] = df['streets_cnt'].apply(nullif)
     df['sidewalks_cnt'] = df['sidewalks_cnt'].apply(nullif)
     df.reset_index(inplace=True)
@@ -203,10 +287,17 @@ def boro_cleanup(big_df, yyyy, mm):
     #change in percent, not percent change.
     answer['ChangeInPercentCleanStreetsYearly'] = (answer.PercentAcceptablyCleanStreets - oya_acceptable_streets).astype('float')   # #(final - initial) / initial	
     answer['ChangeInPercentCleanSidewalksYearly'] = (answer.PercentAcceptablyCleanSidewalks - oya_acceptable_sidewalks).astype('float')  
-    answer['ThreeMonthAveragePercentCleanStreets']	= (big_df.streets_acceptable_milesl3mg2 / big_df.linear_milesl3mg2).astype('float')  
-    answer['ThreeMonthAveragePercentCleanSidewalks'] = (big_df.sidewalks_acceptable_milesl3mg2 / big_df.linear_milesl3mg2).astype('float') 
-    oyal3m_acceptable_streets = (big_df.streets_acceptable_milesoyal3m / big_df.linear_milesoyal3m)
-    oyal3m_acceptable_sidewalks =  (big_df.sidewalks_acceptable_milesoyal3m / big_df.linear_milesoyal3m)
+    
+    ###### can't calculate percent clean at the end. ######
+    ###### Have to calculate percent clean each month and aggregate the percentages as per MMR. #####
+    ### answer['ThreeMonthAveragePercentCleanStreets']	= (big_df.streets_acceptable_milesl3mg2 / big_df.linear_milesl3mg2).astype('float')  
+    ### answer['ThreeMonthAveragePercentCleanSidewalks'] = (big_df.sidewalks_acceptable_milesl3mg2 / big_df.linear_milesl3mg2).astype('float') 
+    ### oyal3m_acceptable_streets = (big_df.streets_acceptable_milesoyal3m / big_df.linear_milesoyal3m)
+    ### oyal3m_acceptable_sidewalks =  (big_df.sidewalks_acceptable_milesoyal3m / big_df.linear_milesoyal3m)
+    answer['ThreeMonthAveragePercentCleanStreets'] = big_df.percent_clean_streets_3m_l3mg2
+    answer['ThreeMonthAveragePercentCleanSidewalks'] = big_df.percent_clean_sidewalks_3m_l3mg2
+    oyal3m_acceptable_streets = big_df.percent_clean_streets_3m_oyal3m
+    oyal3m_acceptable_sidewalks = big_df.percent_clean_sidewalks_3m_oyal3m
     answer['ChangeIn3MonthAverageCleanStreets'] = (answer.ThreeMonthAveragePercentCleanStreets - oyal3m_acceptable_streets).astype('float')  
     answer['ChangeIn3MonthAverageCleanSidewalks'] = (answer.ThreeMonthAveragePercentCleanSidewalks - oyal3m_acceptable_sidewalks).astype('float')  
     #print(f"threeMonthAverage%CleanStreets: {answer.ThreeMonthAveragePercentCleanStreets} \n oyal3m_acceptable_streets: {oyal3m_acceptable_streets} answer= {answer.ThreeMonthAveragePercentCleanStreets - oyal3m_acceptable_streets}")
