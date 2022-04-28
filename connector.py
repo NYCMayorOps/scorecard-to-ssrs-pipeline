@@ -20,6 +20,7 @@ class Connector:
     bid_linear_miles = pd.DataFrame() #pd.read_csv('bid_linear_miles.csv')
     conn = None
 
+
     def __init__(self):
         self.conn = self.db_connect()
         print("connected to db")
@@ -33,7 +34,7 @@ class Connector:
 
     def db_connect(self):
         conn_str=os.getenv("CONNECTION_STRING_SQL_ALCHEMY")
-        print(conn_str)
+        #print(conn_str)
         return create_engine(conn_str)
 
     def test_fulcrum_data(self):
@@ -59,10 +60,36 @@ class Connector:
     def get_district(self):
         return pd.read_sql(f"SELECT * FROM [dbo].[District];", self.conn)
 
+    def set_string(self, df, key_list):
+        '''
+        SET val = @val WHERE [key] = @key;
+        ''' 
+        pass
+
+    def insert_string(self, df, db_name, key_list):
+        f'''
+        INSERT INTO {db_name} VALUES(); 
+        '''
+        pass
+
+    def upload_query(self, df, key_list, db_name):
+        return f'''BEGIN TRANSACTION; 
+        UPDATE {db_name} WITH (UPDLOCK, SERIALIZABLE) 
+        {self.set_string(df, key_list)}
+        IF @@ROWCOUNT = 0 
+        BEGIN 
+        {self.insert_string(df, db_name, key_list)}
+        END 
+        COMMIT TRANSACTION;
+        '''
 
     #upload Section
-    #upload district
-    #upload borough
+    def upload_sections(self, df):
+        for index, row in df.iterrows():
+            self.conn.execute(f'''''')
+
+    #upload districts
+    #upload boroughs
     #upload citywide
-    #upload bid
+    #upload bids
     #upload bid citywide
