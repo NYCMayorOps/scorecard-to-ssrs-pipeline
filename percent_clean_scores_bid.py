@@ -25,18 +25,19 @@ def scorecard_bids(fd, yyyy, quarter, connector):
     else:
         raise Exception("not a valid quarter")
     #from sections
-    fd = pcss.load_fulcrum_data(fd, yyyy, mm, is_one_month = False)
-    this_agg = aggregate(fd)
+    fd = pcss.load_fulcrum_data(fd, yyyy, mm, False, connector )
+    this_agg = aggregate(fd, connector)
     a = merge_linear_miles(this_agg, connector)
     a = pcss.rating_calculation(a)
     return cleanup(a, yyyy, quarter)
 #for multimonth
 nullif = lambda x: x if x > 0 else np.nan
 
-def aggregate(fd):
+def aggregate(fd, connector):
     #create quarter
     fd['quarter'] = None
     fd_copy = fd.copy()
+
     month_to_quarter = {
         1 : 'Q1',
         2 : 'Q1',
@@ -50,10 +51,10 @@ def aggregate(fd):
         10 : 'Q4',
         11 : 'Q4',
         12 : 'Q4'
-    }
+    }   
+    fd_copy = fd.copy()
     for index, row in fd_copy.iterrows():
-        fd.at[index, 'quarter'] = str(int(row['currentyear'])) + month_to_quarter[row['currentmonth']]
-    #print(f"bid identifier: {set(fd['bid_identifier'])}")
+        fd.at[index, 'quarter'] = str(int(row['my_date'].year)) + month_to_quarter[row['my_date'].month]
     fd['bid_id'] = fd['bid_identifier'].apply(lambda x: x.split('_')[-1] if x is not None else '')
     #print(f"bid id: {set(fd['bid_id'])}")
     groupby_list = ['bid_id', 'quarter']
