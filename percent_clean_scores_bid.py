@@ -54,6 +54,9 @@ def aggregate(fd, connector):
     }   
     fd_copy = fd.copy()
     for index, row in fd_copy.iterrows():
+        #my_date is parsed from updated_date. it is taking updated date. 
+        #it is possible that data has been filtered if _updated_at does not equal currentyear and currentmonth
+        #if deleted, you will see a warning in the console.
         fd.at[index, 'quarter'] = str(int(row['my_date'].year)) + month_to_quarter[row['my_date'].month]
     fd['bid_id'] = fd['bid_identifier'].apply(lambda x: x.split('_')[-1] if x is not None else '')
     #print(f"bid id: {set(fd['bid_id'])}")

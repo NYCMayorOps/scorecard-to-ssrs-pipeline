@@ -39,25 +39,7 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, connector, end_year=None, end_
     #fd for fulcrum data, same as sql
     #print(fd.info())
     #### before we do anything, lets make sure the _updated_date is the same as the created_date
-    fd['my_date2'] = pd.to_datetime(fd['_updated_at'], format='%Y-%m-%d %H:%M:%S')
-    fd_copy = fd.copy()
-    my_filter = []
-    i = 0
-    j = 0
-    for index, row in fd_copy.iterrows():
-        j += 1
-        try:
-            assert(int(row['currentmonth']) == row.my_date2.month and int(row['currentyear']) == row.my_date2.year )
-            my_filter.append(True)
-        except:
-            logging.warn(f"failed to match {row.currentmonth}, {row.currentyear}, {row.my_date2}. Deleting from fulcrum data")
-            my_filter.append(False)
-            i += 1
-    print(f"{i} rows deleted")
-    print(f"of {j} rows")
-    print(f"that is {i / j} percent")
-    fd = fd[my_filter]
-    fd.reset_index(drop=True, inplace=True)     
+    
     #have to truncate the day and time from my_date for equality comparison with other datetimes (yyyy-mm).
     fd['my_date'] = fd['my_date2'].apply(lambda x: datetime.strptime(datetime.strftime(x, '%Y-%m'), '%Y-%m'))
     this_month = f"{yyyy}-{mm}"

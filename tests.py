@@ -16,6 +16,8 @@ print("############################################################")
 class TestClass(unittest.TestCase):
 
     connector = Connector()
+    fd_mock = connector.ryan_filter(connector.fd_mock)
+
     
     def test_connection(self):
         assert(len(self.connector.fd) > 2)
@@ -24,7 +26,7 @@ class TestClass(unittest.TestCase):
         assert(len(self.connector.district) > 2)
        
     def test_percent_clean_scores_section(self):
-        df = self.connector.fd_mock
+        df = self.fd_mock
         if df.empty:
             raise Exception("connector returned empty dataframe")
         actual = scorecard_sections(df, 2021, 11, self.connector, True)
@@ -35,7 +37,7 @@ class TestClass(unittest.TestCase):
     
     
     def test_percenct_clean_scores_district(self):
-        df = self.connector.fd_mock
+        df = self.fd_mock
         if df.empty:
             raise Exception("connector returned empty dataframe")
         actual = scorecard_districts(df, 2021, 11, self.connector )
