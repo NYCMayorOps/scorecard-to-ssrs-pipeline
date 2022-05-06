@@ -26,14 +26,15 @@ def scorecard_districts(fd, yyyy, mm, connector):
     #calculate percent changes.
     big_combine = final_district_df_combine(tmg, oyag, l3mg, oyal3mg)
     dclean =  districts_cleanup(big_combine, yyyy, mm)
+    #right join to district table from DB to include all the districts. Move to second position.
     dclean =  pd.merge(dclean, connector.district, how='right', on='District' )
+    dist_col = dclean.pop('District')
+    dclean.insert(loc=0, column='District', value=dist_col)
     dclean['Month'] = dclean['Month'].apply(lambda x: str(yyyy) + pad_month(mm))
-    #dclean['Borough'] = dclean['Borough_y']
-    #dclean.drop(['Borough_x', 'Borough_y'], axis=1, inplace=True)
     dclean.insert(0, 'Borough', dclean.pop('Borough'))
     del dclean['district_no']
     dclean.reset_index(drop=True, inplace=True)
-    dclean.to_csv('answer_district.csv')
+    #dclean.to_csv('answer_district.csv', index=False)
 
     
     return dclean

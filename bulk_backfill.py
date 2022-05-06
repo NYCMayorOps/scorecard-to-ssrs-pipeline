@@ -234,30 +234,47 @@ if __name__ == '__main__':
     fd_all = connector.ryan_filter(fd_all)
     start_month=1
     start_year=2017
-    end_month=4
-    end_year=2022
-    
-    answer = bulk_boros(fd_all, start_year, start_month, end_year, end_month, connector)
-    answer.to_csv(f"bulk_convert_boro-{answer.Month.min()}_to_{answer.Month.max()}.csv")
- 
-    answer = bulk_sections(fd_all, start_year, start_month, end_year, end_month, connector)
-    answer.to_csv(f"bulk_convert_sections-{answer.MONTH.min()}_to_{answer.MONTH.max()}.csv")
+    today = datetime.today()
+    end_month=today.month
+    end_year=today.year
+    print(f"end_date: {end_year}, {end_month}")
 
-    answer = bulk_districts(fd_all, start_year, start_month, end_year, end_month, connector)
-    answer.to_csv(f"bulk_convert_districts-{answer.Month.min()}_to_{answer.Month.max()}.csv")
+    drop_text = ""
+    if connector.delete_if_months_do_not_match:
+        drop_text = "drop_mismatch_months"
+    else:
+        drop_text = "no_drop"
+    print(drop_text)
 
     answer = bulk_citywide(fd_all, start_year, start_month, end_year, end_month, connector)
-    answer.to_csv(f"bulk_convert_citywide-{answer.Month.min()}_to_{answer.Month.max()}.csv")
-    answer.to_csv(Path(os.getenv('MAYOR_DASHBOARD_ROOT')) / 'output' / 'scorecard' / 'scorecard_citywide_backfill.csv')
-
+    #answer.to_csv(f"bulk_convert_citywide-{drop_text}-{answer.Month.min()}_to_{answer.Month.max()}.csv", index=False)
+    answer.to_csv(Path(os.getenv('MAYOR_DASHBOARD_ROOT')) / 'output' / 'scorecard' / f'scorecard_citywide_backfill-{drop_text}.csv', index=False)
+    answer.to_sql('ResultCitywide',connector.conn, if_exists='replace')
     #bids not available before 11-2021
+
+    answer = bulk_boros(fd_all, start_year, start_month, end_year, end_month, connector)
+    #answer.to_csv(f"bulk_convert_boro-{drop_text}-{answer.Month.min()}_to_{answer.Month.max()}.csv", index=False)
+    answer.to_sql('ResultBoro',connector.conn, if_exists='replace')
+
+    answer = bulk_districts(fd_all, start_year, start_month, end_year, end_month, connector)
+    #answer.to_csv(f"bulk_convert_districts-{drop_text}-{answer.Month.min()}_to_{answer.Month.max()}.csv", index=False )
+    answer.to_sql('ResultDistrict',connector.conn, if_exists='replace')
+    
+    answer = bulk_sections(fd_all, start_year, start_month, end_year, end_month, connector)
+    #answer.to_csv(f"bulk_convert_sections-{drop_text}-{answer.MONTH.min()}_to_{answer.MONTH.max()}.csv", index=False)
+    answer.to_sql('ResultSection',connector.conn, if_exists='replace')
+
+   
+
+ 
     start_year = 2021
     end_year = 2022
 
     answer = bulk_bids(fd_all, start_year, end_year, connector)
-    answer.to_csv(f"bulk_convert_bids-{answer.quarter.min()}_to_{answer.quarter.max()}.csv")
-    answer.to_csv(Path(os.getenv('MAYOR_DASHBOARD_ROOT')) / 'output' / 'scorecard' / 'scorecard_bids_backfill.csv')
-    
+    #answer.to_csv(f"bulk_convert_bids-{drop_text}-{answer.quarter.min()}_to_{answer.quarter.max()}.csv", index=False)
+    answer.to_csv(Path(os.getenv('MAYOR_DASHBOARD_ROOT')) / 'output' / 'scorecard' / 'scorecard_bids_backfill-{drop_text}.csv', index=False)
+    answer.to_sql('ResultBid',connector.conn, if_exists='replace')
+
     answer = bulk_bids_citywide(fd_all, start_year, end_year, connector)
-    answer.to_csv(f"bulk_convert_bids_citywide-{answer.quarter.min()}_to_{answer.quarter.max()}.csv")
-    
+    #answer.to_csv(f"bulk_convert_bids_citywide-{drop_text}-{answer.quarter.min()}_to_{answer.quarter.max()}.csv", index=False)
+    answer.to_sql('ResultBidCitywide',connector.conn, if_exists='replace')

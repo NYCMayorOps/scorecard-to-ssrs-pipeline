@@ -15,6 +15,7 @@ dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
 load_dotenv(dotenv_path=dotenv_path)
 
 class Connector:
+    delete_if_months_do_not_match = True
     fd = pd.DataFrame()
     fd_mock = pd.DataFrame()
     fd_bids_mock = pd.DataFrame()
@@ -44,7 +45,7 @@ class Connector:
 
     def test_fulcrum_data(self):
         df = pd.read_sql('SELECT TOP(5) * FROM [dbo].[Fulcrum_Data]', self.conn)
-        print(df.info())
+        #print(df.info())
     
     #read past two years into fulcrum data
     def get_fd_last_2_years(self):
@@ -56,6 +57,7 @@ class Connector:
         answer =  pd.read_sql(f"SELECT * FROM [dbo].[LinearMiles];", self.conn)
         answer.LINEAR_MILES = answer.LINEAR_MILES.astype(float)
         return answer
+        
     #get bid linear miles
     def get_bid_linear_miles(self):
         answer = pd.read_sql(f"SELECT * FROM [dbo].[bid_linear_miles];", self.conn)
@@ -111,16 +113,15 @@ class Connector:
         #### output prod fd
         prod_copy = fd.copy()
         prod_copy = prod_copy.drop('my_date2', axis=1)
-        prod_copy.to_csv('fd_prod_copy.csv')
+        #prod_copy.to_csv('fd_prod_copy.csv')
         ####
-        delete_if_months_do_not_match = False
-        if delete_if_months_do_not_match:
+        if self.delete_if_months_do_not_match:
             print(f"{i} rows deleted \n of {j} rows; \n that is {i / j} percent.")
             fd = fd[my_filter]
         else:
             print(f"this run preserves all {j} rows of fuclcrum data.")
         fd.reset_index(drop=True, inplace=True)     
         fd = fd.copy()
-        print(fd.info())
+        #print(fd.info())
         return fd
 
