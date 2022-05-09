@@ -10,6 +10,7 @@ pad_month= lambda x: str(x) if (len(str(int(x))) == 2) else '0' + str(int(x))
 
 def scorecard_districts(fd, yyyy, mm, connector):
     #find this month
+    print(f"districts: {yyyy}-{mm}")
     tm = pcss.scorecard_sections(fd, yyyy, mm, connector, True)
     #find one year ago
     oya = pcss.scorecard_sections(fd, int(yyyy - 1), mm, connector, True)
