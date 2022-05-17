@@ -2,7 +2,9 @@ import percent_clean_scores_section as pcss
 import pandas as pd
 import numpy as np
 from connector import Connector
+from precision import Precision
 
+precision = Precision().precision
 
 
 
@@ -179,7 +181,8 @@ def districts_cleanup(big_df, yyyy, mm):
     #sw_cnt_filter = big_df['sidewalks_cnttmg'].apply(lambda x: 1 if nullif(x) is not None else None)   
     st_cnt_filter = 1
     sw_cnt_filter = 1
-    lambda_round = lambda x: my_round(x, 3)
+    precision = Precision().precision
+    lambda_round = lambda x: my_round(x, precision)
     answer = pd.DataFrame()
     answer['Borough'] = big_df.BOROUGHtmg
     answer['District']	= big_df.DISTRICT

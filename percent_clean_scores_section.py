@@ -9,7 +9,9 @@ from pandas import testing
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import logging
+from precision import Precision
 
+precision = Precision().precision
 #pd.options.mode.chained_assignment = 'warn'
 
 #formerly know as scout_v2_fulcrum_export_cpr in SQL
@@ -168,7 +170,7 @@ def merge_linear_miles(this_agg, connector):
 def rating_calculation(a):
     if len(a.index) == 0:
         logging.warn('where is input for rating calculation?')
-    a['street_rating_average'] = a['st_rate_avg'].astype(float).round(3)
+    a['street_rating_average'] = a['st_rate_avg'].astype(float).round(precision)
     nullif = lambda x: x if x > 0 else np.nan 
     #in sql, you would check if the st_count_rated was null by dividing count rated by count rated.
     #if count_rated is None, none times accept = none. 
@@ -210,6 +212,7 @@ lambda_int = lambda x: int(x) if (type(x) == float or type(x) == int) and np.isn
 
 
 def final_format(a):
+    precision = Precision().precision
     null_answer = pd.DataFrame(columns=['BOROUGH', 
                             'DISTRICT', 
                             'SECTION', 
@@ -236,19 +239,19 @@ def final_format(a):
     df['SECTION'] = a.section_no
     #the month will be determined by query not realitiy
     df['MONTH'] = a['month']
-    df['STREET_RATING_AVG'] = a.st_rate_avg.astype(float).round(3)
+    df['STREET_RATING_AVG'] = a.st_rate_avg.astype(float).round(precision)
     df['STREETS_CNT'] = a.st_count.apply(lambda_int)
     df['STREETS_ACCEPTABLE_CNT'] = a.streets_acceptable_cnt.apply(lambda_int)
-    df['STREETS_ACCEPTABLE_MILES'] = a.streets_acceptable_miles.astype(float).round(3)
-    df['STREETS_FILTHY_MILES'] = a.streets_filthy_miles.astype(float).round(3)
+    df['STREETS_ACCEPTABLE_MILES'] = a.streets_acceptable_miles.astype(float).round(precision)
+    df['STREETS_FILTHY_MILES'] = a.streets_filthy_miles.astype(float).round(precision)
     df['STREETS_FILTHY_CNT'] = a.streets_filthy_cnt.apply(lambda_int)
-    df['SIDEWALKS_RATING_AVG'] = a.sw_rate_avg.astype(float).round(3)
+    df['SIDEWALKS_RATING_AVG'] = a.sw_rate_avg.astype(float).round(precision)
     df['SIDEWALKS_CNT'] = a.sw_count.apply(lambda_int)
     df['SIDEWALKS_ACCEPTABLE_CNT'] = a.sidewalks_acceptable_cnt.apply(lambda_int)
-    df['SIDEWALKS_ACCEPTABLE_MILES'] = a.sidewalks_acceptable_miles.astype(float).round(3)
+    df['SIDEWALKS_ACCEPTABLE_MILES'] = a.sidewalks_acceptable_miles.astype(float).round(precision)
     df['SIDEWALKS_FILTHY_CNT'] = a.sidewalks_filthy_cnt.apply(lambda_int)
-    df['SIDEWALKS_FILTHY_MILES'] = a.sidewalks_filthy_miles.astype(float).round(3)
-    df['LINEAR_MILES'] = a.linear_miles.astype(float).round(3)
+    df['SIDEWALKS_FILTHY_MILES'] = a.sidewalks_filthy_miles.astype(float).round(precision)
+    df['LINEAR_MILES'] = a.linear_miles.astype(float).round(precision)
     #SECTION,MONTH,STREET_RATING_AVG,STREETS_CNT,STREETS_ACCEPTABLE_CNT,STREETS_ACCEPTABLE_MILES,STREETS_FILTHY_MILES,STREETS_FILTHY_CNT,SIDEWALK_RATING_AVG,SIDEWALKS_CNT,SIDEWALKS_ACCEPTABLE_CNT,SIDEWALKS_ACCEPTABLE_MILES,SIDEWALKS_FILTHY_CNT,SIDEWALKS_FILTHY_MILES,LINEAR_MILES,BULK_STREET_RATING_AVG,BULK_SIDEWALK_RATING_AVG,BULK_STREETS_CNT,BULK_SIDEWALKS_CNT
     #df.to_csv("answer.csv")
     return df

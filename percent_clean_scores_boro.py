@@ -2,7 +2,9 @@ import percent_clean_scores_section as pcss
 import pandas as pd
 import numpy as np
 from connector import Connector
+from precision import Precision
 
+precision = Precision().precision
 
 pad_month= lambda x: str(x) if (len(str(int(x))) == 2) else '0' + str(int(x))
 
@@ -273,7 +275,8 @@ def boro_cleanup(big_df, yyyy, mm):
     #this won't work aggregated. Need to do it before aggregation
     #st_cnt_filter = big_df['streets_cnttmg'].apply(lambda x: 1 if nullif(x) is not None else None)
     #sw_cnt_filter = big_df['sidewalks_cnttmg'].apply(lambda x: 1 if nullif(x) is not None else None)   
-    lambda_round = lambda x: my_round(x, 3)
+    precision = Precision().precision
+    lambda_round = lambda x: my_round(x, precision)
     answer = pd.DataFrame()
     answer['Borough'] = big_df.BOROUGH
     #answe['.']DistrictNo = 	
