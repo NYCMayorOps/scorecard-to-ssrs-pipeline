@@ -16,6 +16,6 @@ def scorecard_bids_citywide(fd, yyyy, quarter, connector):
     this_agg.reset_index(inplace=True)                                                   
     answer = pd.DataFrame()
     answer['quarter'] = this_agg['quarter']
-    answer['percent_acceptably_clean_streets'] = round((this_agg.st_acceptable_miles / this_agg.linear_miles), precision) * 100
-    answer['percent_acceptably_clean_sidewalks'] =  round((this_agg.sw_acceptable_miles / this_agg.linear_miles), precision) * 100
+    answer['percent_acceptably_clean_streets'] = round(((this_agg.st_acceptable_miles * 100)/ this_agg.linear_miles), precision)
+    answer['percent_acceptably_clean_sidewalks'] =  round(((this_agg.sw_acceptable_miles * 100)/ this_agg.linear_miles), precision)
     return answer

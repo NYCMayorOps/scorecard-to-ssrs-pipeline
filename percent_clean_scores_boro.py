@@ -273,13 +273,11 @@ def my_round(number, decimals):
 def boro_cleanup(big_df, yyyy, mm):
     #create a filter that returns None if streets_cnt is null (or zero, which became null after aggregation)
     #this won't work aggregated. Need to do it before aggregation
-    #st_cnt_filter = big_df['streets_cnttmg'].apply(lambda x: 1 if nullif(x) is not None else None)
-    #sw_cnt_filter = big_df['sidewalks_cnttmg'].apply(lambda x: 1 if nullif(x) is not None else None)   
     precision = Precision().precision
     lambda_round = lambda x: my_round(x, precision)
     answer = pd.DataFrame()
     answer['Borough'] = big_df.BOROUGH
-    #answe['.']DistrictNo = 	
+
     answer['Month'] =  str(yyyy) + pad_month(mm)
     answer['PercentAcceptablyCleanStreets'] = 	((big_df.streets_acceptable_milestmg / big_df.linear_milestmg)).astype('float')  
     answer['PercentFilthyStreets']	 = ((big_df.streets_filthy_milestmg  / big_df.linear_milestmg)).astype('float')  #linear miles is never null for any section or district and does not change
