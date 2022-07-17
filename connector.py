@@ -1,6 +1,5 @@
 import os
 import pyodbc
-from turtle import fd
 import pandas as pd
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, \
      ForeignKey, event
