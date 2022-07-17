@@ -185,10 +185,10 @@ def rating_calculation(a):
     a['streets_filthy_cnt'] = ((a.st_count_rated) / a.st_count_rated) * a.st_count_filthy
     a['sidewalk_rating_avg'] = ((a.sw_rate_avg))
     #a['sidewalks_cnt'] = a['sw_count_rated'].apply(none_if_na_else_1)
-    a['sidewalks_acceptable_cnt'] = ((a.sw_count_rated) / a.sw_count_rated) * a.sw_count_accept
+    a['sidewalks_acceptable_cnt'] = ((a.sw_count_rated) / a.sw_count_rated) * a.sw_count_accept #1 if rated is greater than 0
     a['sidewalks_acceptable_miles'] = ((a.sw_count_accept / (a.sw_count_rated)) *  a.linear_miles)
     a['sidewalks_filthy_miles'] = ((a.sw_count_filthy / (a.sw_count_rated)) *  a.linear_miles)
-    a['sidewalks_filthy_cnt'] =  ((a.sw_count_rated) / a.sw_count_rated) * a.sw_count_filthy
+    a['sidewalks_filthy_cnt'] =  ((a.sw_count_rated) / a.sw_count_rated) * a.sw_count_filthy #one if sw_count > 0
     a['linear_miles'] = ((a.st_count_rated) / a.st_count_rated) * (a.linear_miles)
     #a.to_csv('rating_calculation.csv')
     return a
