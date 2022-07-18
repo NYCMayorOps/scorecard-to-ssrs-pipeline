@@ -97,7 +97,7 @@ def bulk_boros(fd, start_year, start_month, end_year, end_month, connector):
         df = df.append(this_df, ignore_index=True)
     return df
 
-if __name__ == '__main__':
+def execute():
     connector = Connector()
     scorecard1 = pd.read_csv('fd-2019-8-to-2021-10.csv')
     #print(scorecard1['_updated_at'][0])
