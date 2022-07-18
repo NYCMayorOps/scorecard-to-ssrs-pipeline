@@ -10,8 +10,10 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from pathlib import Path
 
-dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
-load_dotenv(dotenv_path=dotenv_path)
+#dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
+#load_dotenv(dotenv_path=dotenv_path)
+from airflow.models import Variable
+
 
 class Connector:
     delete_if_months_do_not_match = True
@@ -38,7 +40,8 @@ class Connector:
         print("connection initialized")
 
     def db_connect(self):
-        conn_str=os.getenv("CONNECTION_STRING_SQL_ALCHEMY")
+        connection_string = Variable.get("CONNECTION_STRING_SQL_ALCHEMY")
+        conn_str=connection_string
         #print(conn_str)
         return create_engine(conn_str)
 
