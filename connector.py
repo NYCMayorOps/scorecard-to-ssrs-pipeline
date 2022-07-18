@@ -37,8 +37,8 @@ class Connector:
         self.bid_linear_miles = self.get_bid_linear_miles()
         assert (self.bid_linear_miles.empty == False)
         self.district = self.get_district()
-        self.fd_mock = self.ryan_filter(pd.read_csv(Path(self.reporting_root) / 'scorecard_reporting' / 'fd_mock_all.csv'))
-        self.fd_bids_mock = self.ryan_filter(pd.read_csv(Path(self.reporting_root) / 'scorecard_reporting' / 'fd_bids.csv'))
+        self.fd_mock = self.ryan_filter(pd.read_csv(Path(self.reporting_root) / 'fd_mock_all.csv'))
+        self.fd_bids_mock = self.ryan_filter(pd.read_csv(Path(self.reporting_root) / 'fd_bids.csv'))
         print("connection initialized")
 
     def db_connect(self):
