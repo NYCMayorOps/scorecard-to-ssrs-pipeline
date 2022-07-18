@@ -1,7 +1,6 @@
 
 from calendar import month
 from itertools import count
-import this
 import pandas as pd
 import numpy as np
 
