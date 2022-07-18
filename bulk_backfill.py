@@ -1,10 +1,10 @@
 import os
 import pandas as pd
-import percent_clean_scores_section as pcss
-import percent_clean_scores_district as pcsd
-import percent_clean_scores_bid as pcsbid
-import percent_clean_scores_bid_citywide as pcsbidc
-import percent_clean_scores_boro as pcsb
+from . import percent_clean_scores_section as pcss
+from . import percent_clean_scores_district as pcsd
+from . import percent_clean_scores_bid as pcsbid
+from . import percent_clean_scores_bid_citywide as pcsbidc
+from . import percent_clean_scores_boro as pcsb
 from datetime import datetime
 from connector import Connector
 from dotenv import load_dotenv

@@ -1,6 +1,6 @@
 import pandas as pd
 #this will be offline.
-from connector import Connector
+from .connector import Connector
 connector = Connector()
 lm = connector.linear_miles
 bid = connector.bids

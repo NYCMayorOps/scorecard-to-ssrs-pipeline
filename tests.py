@@ -1,12 +1,12 @@
 from unittest.mock import patch, Mock
 import unittest
 import pandas as pd
-from percent_clean_scores_section import scorecard_sections
-from percent_clean_scores_district import scorecard_districts
-from percent_clean_scores_boro import scorecard_boros, scorecard_citywide
-from percent_clean_scores_bid import scorecard_bids
-from percent_clean_scores_bid_citywide import scorecard_bids_citywide
-from connector import Connector
+from .percent_clean_scores_section import scorecard_sections
+from .percent_clean_scores_district import scorecard_districts
+from .percent_clean_scores_boro import scorecard_boros, scorecard_citywide
+from .percent_clean_scores_bid import scorecard_bids
+from .percent_clean_scores_bid_citywide import scorecard_bids_citywide
+from .connector import Connector
 
 
 print("############################################################")

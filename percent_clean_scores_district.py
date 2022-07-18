@@ -1,8 +1,8 @@
-import percent_clean_scores_section as pcss
+from . import percent_clean_scores_section as pcss
 import pandas as pd
 import numpy as np
-from connector import Connector
-from precision import Precision
+from .connector import Connector
+from .precision import Precision
 
 precision = Precision().precision
 

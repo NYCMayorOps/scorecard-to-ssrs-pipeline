@@ -1,10 +1,10 @@
 import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-import percent_clean_scores_section as pcss
+from . import percent_clean_scores_section as pcss
 import numpy as np
 import logging
-from precision import Precision
+from .precision import Precision
 
 precision = Precision().precision
 #bids only recorded after 11-2021
