@@ -6,7 +6,7 @@ from . import percent_clean_scores_bid as pcsbid
 from . import percent_clean_scores_bid_citywide as pcsbidc
 from . import percent_clean_scores_boro as pcsb
 from datetime import datetime
-from connector import Connector
+from .connector import Connector
 from dotenv import load_dotenv
 from pathlib import Path
 
