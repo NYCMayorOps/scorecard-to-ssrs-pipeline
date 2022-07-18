@@ -160,7 +160,7 @@ def execute():
 
     scorecard2 = connector.fd
     scorecard_both = pd.concat([scorecard1_xform, scorecard2], ignore_index=True )
-    scorecard_irm= pd.read_csv('fulcrum_irm_2017_to_2019.csv')
+    scorecard_irm= pd.read_csv(Path(reporting_root) / 'fulcrum_irm_2017_to_2019.csv')
     
     ###scorecard irm
     '''
