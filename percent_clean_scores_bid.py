@@ -79,7 +79,7 @@ def aggregate(fd, connector):
     this_agg['st_count_rated'] = this_agg['st_count_rated'].apply(nullif)
     this_agg['sw_count'] = this_agg['sw_count'].apply(nullif)
     this_agg['sw_count_rated'] = this_agg['sw_count_rated'].apply(nullif)
-    this_agg.to_csv('this_agg_bid.csv')
+    #this_agg.to_csv('this_agg_bid.csv')
     return this_agg
 
 def merge_linear_miles(this_agg, connector):  
@@ -96,7 +96,7 @@ def merge_linear_miles(this_agg, connector):
     for index, row in this_agg_copy.iterrows():
         if nullif(row['st_count_rated']) is np.nan:
             this_agg.at[index, 'linear_miles'] = np.nan
-    this_agg.to_csv('bid_agg.csv')
+    #this_agg.to_csv('bid_agg.csv')
     return this_agg
 
 lambda_int = lambda x: int(x) if (type(x) == float or type(x) == int) and np.isnan(x) == False else np.nan

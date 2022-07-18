@@ -34,7 +34,7 @@ def scorecard_boros(fd, yyyy, mm, connector):
     #dclean.insert(0, 'Borough', dclean.pop('Borough'))
 
     dclean = dclean.reset_index(drop=True)
-    dclean.to_csv('answer_boro.csv')
+    #dclean.to_csv('answer_boro.csv')
     return dclean
 
 def scorecard_citywide(fd, yyyy, mm, connector):
@@ -65,7 +65,7 @@ def scorecard_citywide(fd, yyyy, mm, connector):
     #drop the index brutally
     #del dclean[dclean.columns[0]]
     dclean =  dclean.reset_index(drop=True)
-    dclean.to_csv('answer_citywide.csv')
+    #dclean.to_csv('answer_citywide.csv')
     return dclean
 
 def group_by_boro(df):

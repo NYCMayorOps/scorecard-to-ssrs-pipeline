@@ -10,9 +10,10 @@ from .connector import Connector
 from dotenv import load_dotenv
 from pathlib import Path
 
-dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
-load_dotenv(dotenv_path=dotenv_path)
-
+#dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
+#load_dotenv(dotenv_path=dotenv_path)
+from airflow.models import Variable
+reporting_root = Variable.get('reporting_root')
 def bulk_sections(fd, start_year, start_month, end_year, end_month, connector):
     fd = pcss.load_fulcrum_data(fd, start_year, start_month, False, connector, end_year, end_month )
     this_agg = pcss.aggregate(fd)
@@ -99,7 +100,7 @@ def bulk_boros(fd, start_year, start_month, end_year, end_month, connector):
 
 def execute():
     connector = Connector()
-    scorecard1 = pd.read_csv('fd-2019-8-to-2021-10.csv')
+    scorecard1 = pd.read_csv(Path(reporting_root) / 'fd-2019-8-to-2021-10.csv')
     #print(scorecard1['_updated_at'][0])
     scorecard1['currentmonth'] = scorecard1['_updated_at'].map(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S.%f').month)
     scorecard1['currentyear'] =  scorecard1['_updated_at'].map(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S.%f').year)
@@ -109,7 +110,7 @@ def execute():
     scorecard1.section_no = (scorecard1.section_no.astype('Int64')).astype('str')
     scorecard1 = scorecard1.assign(bds_join_on = lambda x: x['borough'] + x['district_no'] + x['section_no'])
 
-    crosswalk = pd.read_csv('scorecard_v1_bds_crosswalk.csv')
+    crosswalk = pd.read_csv(Path(reporting_root) / 'scorecard_v1_bds_crosswalk.csv')
     crosswalk.borough_no = (crosswalk.borough_no.astype('Int64')).astype('str')
     crosswalk.district_no = (crosswalk.district_no.astype('Int64')).astype('str')
     crosswalk.section_no = (crosswalk.section_no.astype('Int64')).astype('str')
@@ -156,10 +157,8 @@ def execute():
     scorecard1_xform['LogTime'] =             scorecard1['_created_at'] 
 
 
-    #scorecard2 = pd.read_csv('fd-2021-11-present.csv')
+
     scorecard2 = connector.fd
-    #print("scorecard2:")
-    #print(scorecard2.info())
     scorecard_both = pd.concat([scorecard1_xform, scorecard2], ignore_index=True )
     scorecard_irm= pd.read_csv('fulcrum_irm_2017_to_2019.csv')
     
@@ -190,7 +189,7 @@ def execute():
     scorecard_irm['currentmonth'] = scorecard_irm['RegDate'].map(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S.%f').month)
     scorecard_irm['currentyear'] =  scorecard_irm['RegDate'].map(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M:%S.%f').year)
     
-    crosswalk = pd.read_csv('scorecard_v1_bds_crosswalk.csv')
+    crosswalk = pd.read_csv(Path(reporting_root) / 'scorecard_v1_bds_crosswalk.csv')
     scorecard_irm = pd.merge(scorecard_irm, crosswalk, how='inner', on='BoroDistrictSection' )
     #scorecard_irm.to_csv("scorecard_irm_pre_output.csv")
     #create new dataframe
@@ -229,7 +228,7 @@ def execute():
     #scorecard_irm_xform.to_csv('scorecard_irm.csv')
     #print("##### answer #####")
     fd_all = pd.concat([scorecard_irm_xform, scorecard_both], ignore_index=True )
-    fd_all.to_csv('fd_all.csv')
+    #fd_all.to_csv('fd_all.csv')
     #the filter adds the my_date2 column.
     fd_all = connector.ryan_filter(fd_all)
     start_month=1
@@ -248,7 +247,7 @@ def execute():
 
     answer = bulk_citywide(fd_all, start_year, start_month, end_year, end_month, connector)
     #answer.to_csv(f"bulk_convert_citywide-{drop_text}-{answer.Month.min()}_to_{answer.Month.max()}.csv", index=False)
-    answer.to_csv(Path(os.getenv('MAYOR_DASHBOARD_ROOT')) / 'output' / 'scorecard' / f'scorecard_citywide_backfill-{drop_text}.csv', index=False)
+    #answer.to_csv(Path(os.getenv('MAYOR_DASHBOARD_ROOT')) / 'output' / 'scorecard' / f'scorecard_citywide_backfill-{drop_text}.csv', index=False)
     answer.to_sql('ResultCitywide',connector.conn, if_exists='replace')
     #bids not available before 11-2021
 
@@ -272,7 +271,7 @@ def execute():
 
     answer = bulk_bids(fd_all, start_year, end_year, connector)
     #answer.to_csv(f"bulk_convert_bids-{drop_text}-{answer.quarter.min()}_to_{answer.quarter.max()}.csv", index=False)
-    answer.to_csv(Path(os.getenv('MAYOR_DASHBOARD_ROOT')) / 'output' / 'scorecard' / 'scorecard_bids_backfill-{drop_text}.csv', index=False)
+    #answer.to_csv(Path(os.getenv('MAYOR_DASHBOARD_ROOT')) / 'output' / 'scorecard' / 'scorecard_bids_backfill-{drop_text}.csv', index=False)
     answer.to_sql('ResultBid',connector.conn, if_exists='replace')
 
     answer = bulk_bids_citywide(fd_all, start_year, end_year, connector)

@@ -95,7 +95,7 @@ def group_by_district_3_month(df):
     df['cnt'] = df['streets_cnt'].apply(nullif)
     df['sidewalks_cnt'] = df['sidewalks_cnt'].apply(nullif)
     df.reset_index(inplace=True)
-    df.to_csv("three_month_agg.csv")
+    #df.to_csv("three_month_agg.csv")
     return df
 
 

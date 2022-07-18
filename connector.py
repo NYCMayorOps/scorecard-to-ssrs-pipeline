@@ -21,12 +21,14 @@ class Connector:
     fd_mock = pd.DataFrame()
     fd_bids_mock = pd.DataFrame()
     linear_miles= pd.DataFrame()
-    district = pd.DataFrame() #pd.read_csv('district.csv')
-    bid_linear_miles = pd.DataFrame() #pd.read_csv('bid_linear_miles.csv')
+    district = pd.DataFrame() 
+    bid_linear_miles = pd.DataFrame() 
     conn = None
+    reporting_root = None
 
 
     def __init__(self):
+        self.reporting_root =  Variable.get("reporting_root")
         self.conn = self.db_connect()
         print("connected to db")
         self.fd = self.get_fd_last_2_years()
@@ -35,8 +37,8 @@ class Connector:
         self.bid_linear_miles = self.get_bid_linear_miles()
         assert (self.bid_linear_miles.empty == False)
         self.district = self.get_district()
-        self.fd_mock = self.ryan_filter(pd.read_csv(Path.cwd() / 'scorecard_reporting' / 'fd_mock_all.csv'))
-        self.fd_bids_mock = self.ryan_filter(pd.read_csv(Path.cwd() / 'scorecard_reporting' / 'fd_bids.csv'))
+        self.fd_mock = self.ryan_filter(pd.read_csv(Path(self.reporting_root) / 'scorecard_reporting' / 'fd_mock_all.csv'))
+        self.fd_bids_mock = self.ryan_filter(pd.read_csv(Path(self.reporting_root) / 'scorecard_reporting' / 'fd_bids.csv'))
         print("connection initialized")
 
     def db_connect(self):
