@@ -1,7 +1,7 @@
 import numpy as np
 class Precision():
 #a class for rounding. It is done several different ways. This tries to capture all the ways until it is refactored.
-    precision=3
+    precision=8
     
     @classmethod
     def my_int(self, x):
