@@ -4,8 +4,6 @@ import numpy as np
 from .connector import Connector
 from .precision import Precision
 
-precision = Precision().precision
-
 pad_month= lambda x: str(x) if (len(str(int(x))) == 2) else '0' + str(int(x))
 
 def scorecard_boros(fd, yyyy, mm, connector):
@@ -263,56 +261,49 @@ def boro_df_combine(tmg, oyag, l3mg, oyal3mg):
  56  linear_milesoyal3m                4 non-null      float64'''
 
 nullif = lambda x: x if x > 0 else np.nan 
-
-def my_round(number, decimals):
-    try: 
-        return (round(round(number, decimals) * 100, decimals))
-    except:
-        return None
     
 def boro_cleanup(big_df, yyyy, mm):
     #create a filter that returns None if streets_cnt is null (or zero, which became null after aggregation)
     #this won't work aggregated. Need to do it before aggregation
-    precision = Precision().precision
-    lambda_round = lambda x: my_round(x, precision)
+    my_round = Precision().my_round
     answer = pd.DataFrame()
     answer['Borough'] = big_df.BOROUGH
 
     answer['Month'] =  str(yyyy) + pad_month(mm)
-    answer['PercentAcceptablyCleanStreets'] = 	((big_df.streets_acceptable_milestmg / big_df.linear_milestmg)).astype('float')  
+    answer['PercentAcceptablyCleanStreets'] = 	((big_df.streets_acceptable_milestmg / big_df.linear_milestmg)).astype('float')
     answer['PercentFilthyStreets']	 = ((big_df.streets_filthy_milestmg  / big_df.linear_milestmg)).astype('float')  #linear miles is never null for any section or district and does not change
-    answer['PercentAcceptablyCleanSidewalks'] = ((big_df.sidewalks_acceptable_milestmg / big_df.linear_milestmg)).astype('float') 
-    answer['PercentFilthySidewalks'] = ((big_df.sidewalks_filthy_milestmg  / big_df.linear_milestmg)).astype('float') 
+    answer['PercentAcceptablyCleanSidewalks'] = ((big_df.sidewalks_acceptable_milestmg / big_df.linear_milestmg)).astype('float')
+    answer['PercentFilthySidewalks'] = ((big_df.sidewalks_filthy_milestmg  / big_df.linear_milestmg)).astype('float')
     oya_acceptable_streets = (big_df.streets_acceptable_milesoyag / big_df.linear_milesoyag)
     oya_acceptable_sidewalks =  (big_df.sidewalks_acceptable_milesoyag / big_df.linear_milesoyag)
     #change in percent, not percent change.
-    answer['ChangeInPercentCleanStreetsYearly'] = (answer.PercentAcceptablyCleanStreets - oya_acceptable_streets).astype('float')   # #(final - initial) / initial	
-    answer['ChangeInPercentCleanSidewalksYearly'] = (answer.PercentAcceptablyCleanSidewalks - oya_acceptable_sidewalks).astype('float')  
+    answer['ChangeInPercentCleanStreetsYearly'] = (answer.PercentAcceptablyCleanStreets - oya_acceptable_streets).astype('float')   # (final - initial) / initial
+    answer['ChangeInPercentCleanSidewalksYearly'] = (answer.PercentAcceptablyCleanSidewalks - oya_acceptable_sidewalks).astype('float')
     
     ###### can't calculate percent clean at the end. ######
     ###### Have to calculate percent clean each month and aggregate the percentages as per MMR. #####
-    ### answer['ThreeMonthAveragePercentCleanStreets']	= (big_df.streets_acceptable_milesl3mg2 / big_df.linear_milesl3mg2).astype('float')  
-    ### answer['ThreeMonthAveragePercentCleanSidewalks'] = (big_df.sidewalks_acceptable_milesl3mg2 / big_df.linear_milesl3mg2).astype('float') 
+    ### answer['ThreeMonthAveragePercentCleanStreets']	= (big_df.streets_acceptable_milesl3mg2 / big_df.linear_milesl3mg2).astype('float')
+    ### answer['ThreeMonthAveragePercentCleanSidewalks'] = (big_df.sidewalks_acceptable_milesl3mg2 / big_df.linear_milesl3mg2).astype('float')
     ### oyal3m_acceptable_streets = (big_df.streets_acceptable_milesoyal3m / big_df.linear_milesoyal3m)
     ### oyal3m_acceptable_sidewalks =  (big_df.sidewalks_acceptable_milesoyal3m / big_df.linear_milesoyal3m)
     answer['ThreeMonthAveragePercentCleanStreets'] = big_df.percent_clean_streets_3m_l3mg2
     answer['ThreeMonthAveragePercentCleanSidewalks'] = big_df.percent_clean_sidewalks_3m_l3mg2
     oyal3m_acceptable_streets = big_df.percent_clean_streets_3m_oyal3m
     oyal3m_acceptable_sidewalks = big_df.percent_clean_sidewalks_3m_oyal3m
-    answer['ChangeIn3MonthAverageCleanStreets'] = (answer.ThreeMonthAveragePercentCleanStreets - oyal3m_acceptable_streets).astype('float')  
-    answer['ChangeIn3MonthAverageCleanSidewalks'] = (answer.ThreeMonthAveragePercentCleanSidewalks - oyal3m_acceptable_sidewalks).astype('float')  
+    answer['ChangeIn3MonthAverageCleanStreets'] = (answer.ThreeMonthAveragePercentCleanStreets - oyal3m_acceptable_streets).astype('float')
+    answer['ChangeIn3MonthAverageCleanSidewalks'] = (answer.ThreeMonthAveragePercentCleanSidewalks - oyal3m_acceptable_sidewalks).astype('float')
     #print(f"threeMonthAverage%CleanStreets: {answer.ThreeMonthAveragePercentCleanStreets} \n oyal3m_acceptable_streets: {oyal3m_acceptable_streets} answer= {answer.ThreeMonthAveragePercentCleanStreets - oyal3m_acceptable_streets}")
     
-    answer['PercentAcceptablyCleanStreets'] =answer['PercentAcceptablyCleanStreets'].apply(lambda_round)
-    answer['PercentFilthyStreets']	 = answer['PercentFilthyStreets'].apply(lambda_round)	 
-    answer['PercentAcceptablyCleanSidewalks'] = answer['PercentAcceptablyCleanSidewalks'].apply(lambda_round) 
-    answer['PercentFilthySidewalks'] = answer['PercentFilthySidewalks'].apply(lambda_round)
-    answer['ChangeInPercentCleanStreetsYearly'] = answer['ChangeInPercentCleanStreetsYearly'].apply(lambda_round) 
-    answer['ChangeInPercentCleanSidewalksYearly'] = answer['ChangeInPercentCleanSidewalksYearly'].apply(lambda_round) 
-    answer['ThreeMonthAveragePercentCleanStreets']	= answer['ThreeMonthAveragePercentCleanStreets'].apply(lambda_round) 	
-    answer['ThreeMonthAveragePercentCleanSidewalks'] = answer['ThreeMonthAveragePercentCleanSidewalks'].apply(lambda_round)  
-    answer['ChangeIn3MonthAverageCleanStreets'] = answer['ChangeIn3MonthAverageCleanStreets'].apply(lambda_round)  
-    answer['ChangeIn3MonthAverageCleanSidewalks'] = answer['ChangeIn3MonthAverageCleanSidewalks'].apply(lambda_round) 
+    answer['PercentAcceptablyCleanStreets'] =answer['PercentAcceptablyCleanStreets'].apply(my_round)
+    answer['PercentFilthyStreets']	 = answer['PercentFilthyStreets'].apply(my_round)
+    answer['PercentAcceptablyCleanSidewalks'] = answer['PercentAcceptablyCleanSidewalks'].apply(my_round)
+    answer['PercentFilthySidewalks'] = answer['PercentFilthySidewalks'].apply(my_round)
+    answer['ChangeInPercentCleanStreetsYearly'] = answer['ChangeInPercentCleanStreetsYearly'].apply(my_round)
+    answer['ChangeInPercentCleanSidewalksYearly'] = answer['ChangeInPercentCleanSidewalksYearly'].apply(my_round)
+    answer['ThreeMonthAveragePercentCleanStreets']	= answer['ThreeMonthAveragePercentCleanStreets'].apply(my_round)
+    answer['ThreeMonthAveragePercentCleanSidewalks'] = answer['ThreeMonthAveragePercentCleanSidewalks'].apply(my_round)
+    answer['ChangeIn3MonthAverageCleanStreets'] = answer['ChangeIn3MonthAverageCleanStreets'].apply(my_round)
+    answer['ChangeIn3MonthAverageCleanSidewalks'] = answer['ChangeIn3MonthAverageCleanSidewalks'].apply(my_round)
     
     #answer.to_csv('boro_answer.csv')
     return answer

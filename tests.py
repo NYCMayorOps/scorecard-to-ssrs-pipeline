@@ -1,6 +1,7 @@
 from unittest.mock import patch, Mock
 import unittest
 import pandas as pd
+from airflow.models import Variable
 from .percent_clean_scores_section import scorecard_sections
 from .percent_clean_scores_district import scorecard_districts
 from .percent_clean_scores_boro import scorecard_boros, scorecard_citywide
@@ -8,7 +9,7 @@ from .percent_clean_scores_bid import scorecard_bids
 from .percent_clean_scores_bid_citywide import scorecard_bids_citywide
 from .connector import Connector
 from pathlib import Path
-from airflow.models import Variable
+
 print("############################################################")
 
 
@@ -20,11 +21,11 @@ class TestClass(unittest.TestCase):
     reporting_root = Variable.get('reporting_root')
     
     def test_connection(self):
-        assert(len(self.connector.fd) > 2)
-        assert(len(self.connector.linear_miles) > 2)
-        assert(len(self.connector.bid_linear_miles) > 2)
-        assert(len(self.connector.district) > 2)
-       
+        assert len(self.connector.fd) > 2
+        assert len(self.connector.linear_miles) > 2
+        assert len(self.connector.bid_linear_miles) > 2
+        assert len(self.connector.district) > 2
+      
     def test_percent_clean_scores_section(self):
         df = self.fd_mock
         if df.empty:
@@ -34,8 +35,8 @@ class TestClass(unittest.TestCase):
         expected = pd.read_csv(Path(self.reporting_root) / 'dd_section_11_2021_no_lm.csv')
         pd.testing.assert_frame_equal(expected, actual, check_exact=False, rtol=0.1)
         print("test percent clean scores section passed")
-    
-    
+   
+   
     def test_percenct_clean_scores_district(self):
         df = self.fd_mock
         if df.empty:
@@ -46,8 +47,8 @@ class TestClass(unittest.TestCase):
         expected['Month'] = expected['Month'].astype('str')
         pd.testing.assert_frame_equal(expected, actual, check_exact=False, rtol=1)
         print("test percent clean scores district passed.")
-  
-    
+ 
+   
     def test_percent_clean_scores_boro(self):
         df = self.connector.fd_mock
         actual = scorecard_boros(df, 2021, 11, self.connector)
@@ -57,7 +58,7 @@ class TestClass(unittest.TestCase):
         expected.ChangeIn3MonthAverageCleanStreets = expected.ChangeIn3MonthAverageCleanStreets.astype(float)
         pd.testing.assert_frame_equal(expected, actual, check_exact=False, rtol=0.01)
         print("percent clean scores borough passed.")
-    
+   
     def test_percent_clean_scores_bid(self):
         df = self.connector.fd_bids_mock
         if df.empty:
@@ -69,14 +70,14 @@ class TestClass(unittest.TestCase):
         expected = expected.reset_index(drop=True)
         pd.testing.assert_frame_equal(expected, actual, check_exact=False, rtol=0.01)
         print("test_percent_clean_scores_bid passed")
-    
+   
     def test_percent_clean_scores_bid_citywide(self):
         df = self.connector.fd_bids_mock
         actual = scorecard_bids_citywide(df, 2022, 1, self.connector)
         expected = pd.read_csv(Path(self.reporting_root) /'dd_bid_citywide_2022Q1.csv')
         pd.testing.assert_frame_equal(expected, actual, check_exact=False, rtol=0.01)
         print("test_percent_clean_scores_bid_citywide passed")
-    
+   
     def test_percent_clean_scores_citywide(self):
         df = self.connector.fd_mock
         actual = scorecard_citywide(df, 2021, 11, self.connector)
@@ -84,6 +85,6 @@ class TestClass(unittest.TestCase):
         expected.Month = expected.Month.astype(str)
         pd.testing.assert_frame_equal(expected, actual, check_exact=False, rtol=0.01)
         print("test_percent_clean_scores_citywide passed")
-    
+  
 if __name__ == "__main__":
     unittest.main()

@@ -99,27 +99,26 @@ def merge_linear_miles(this_agg, connector):
     #this_agg.to_csv('bid_agg.csv')
     return this_agg
 
-lambda_int = lambda x: int(x) if (type(x) == float or type(x) == int) and np.isnan(x) == False else np.nan
 
 #bids only recorded after 11-2021
 def cleanup(a, yyyy, quarter):
     my_round = Precision.my_round
-    lambda_int = Precision.lambda_int
+    my_int = Precision.my_int
     precision = Precision.precision
     df = pd.DataFrame()
     df['bid_name'] = a.bid_human_name
     df['quarter'] = str(yyyy) + 'Q' + str(quarter)
     df['street_rating_avg'] = my_round(a.street_rating_average.astype(float))
-    df['streets_cnt'] = a.st_count.apply(lambda_int)
-    df['streets_acceptable_cnt'] = a.st_count_accept.apply(lambda_int)
+    df['streets_cnt'] = a.st_count.apply(my_int)
+    df['streets_acceptable_cnt'] = a.st_count_accept.apply(my_int)
     df['streets_acceptable_miles'] = a.streets_acceptable_miles.astype(float).round(precision)
-    df['streets_filthy_cnt'] = a.streets_filthy_cnt.apply(lambda_int)
+    df['streets_filthy_cnt'] = a.streets_filthy_cnt.apply(my_int)
     df['streets_filthy_miles'] = a.streets_filthy_miles.astype(float).round(precision)
     df['sidewalk_rating_avg'] = a.sidewalk_rating_avg.astype(float).round(precision)
-    df['sidewalks_cnt'] = a.sw_count.apply(lambda_int)
-    df['sidewalks_acceptable_cnt'] = a.sidewalks_acceptable_cnt.apply(lambda_int)
+    df['sidewalks_cnt'] = a.sw_count.apply(my_int)
+    df['sidewalks_acceptable_cnt'] = a.sidewalks_acceptable_cnt.apply(my_int)
     df['sidewalks_acceptable_miles'] = a.sidewalks_acceptable_miles.astype(float).round(precision)
-    df['sidewalks_filthy_cnt'] = a.sidewalks_filthy_cnt.apply(lambda_int)
+    df['sidewalks_filthy_cnt'] = a.sidewalks_filthy_cnt.apply(my_int)
     df['sidewalks_filthy_miles'] = a.sidewalks_filthy_miles.astype(float).round(precision)
     df['linear_miles'] = a.linear_miles.astype(float).round(precision)
     df['percent_acceptably_clean_streets'] = (( a.streets_acceptable_miles * 100) / a.linear_miles).astype(float).round(precision)
