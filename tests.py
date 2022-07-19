@@ -27,6 +27,8 @@ class TestClass(unittest.TestCase):
         assert len(self.connector.district) > 2
      
     def test_percent_clean_scores_section(self):
+        #make sure it is working
+        assert 0 == 1
         df = self.fd_mock
         if df.empty:
             raise Exception("connector returned empty dataframe")
