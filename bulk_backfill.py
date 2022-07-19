@@ -20,7 +20,7 @@ from pathlib import Path
 
 dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
 load_dotenv(dotenv_path=dotenv_path)
-#from airflow.models import Variable
+from airflow.models import Variable
 reporting_root = Variable.get('reporting_root')
 #reporting_root = os.getenv('REPORTING_ROOT')
 def bulk_sections(fd, start_year, start_month, end_year, end_month, connector):
