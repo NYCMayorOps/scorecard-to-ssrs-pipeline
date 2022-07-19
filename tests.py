@@ -61,7 +61,7 @@ class TestClass(unittest.TestCase):
         expected.ChangeIn3MonthAverageCleanStreets = expected.ChangeIn3MonthAverageCleanStreets.astype(float)
         pd.testing.assert_frame_equal(expected, actual, check_exact=False, rtol=0.01)
         print("percent clean scores borough passed.")
-
+    
     def test_percent_clean_scores_bid(self):
         df = self.connector.fd_bids_mock
         if df.empty:

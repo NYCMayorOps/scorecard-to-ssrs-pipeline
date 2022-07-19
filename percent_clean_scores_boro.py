@@ -265,7 +265,8 @@ nullif = lambda x: x if x > 0 else np.nan
 def boro_cleanup(big_df, yyyy, mm):
     #create a filter that returns None if streets_cnt is null (or zero, which became null after aggregation)
     #this won't work aggregated. Need to do it before aggregation
-    my_round = Precision().my_round
+    percent_round = Precision().percent_round
+    not_percent_round = Precision().not_percent_round
     answer = pd.DataFrame()
     answer['Borough'] = big_df.BOROUGH
 
@@ -294,16 +295,16 @@ def boro_cleanup(big_df, yyyy, mm):
     answer['ChangeIn3MonthAverageCleanSidewalks'] = (answer.ThreeMonthAveragePercentCleanSidewalks - oyal3m_acceptable_sidewalks).astype('float')
     #print(f"threeMonthAverage%CleanStreets: {answer.ThreeMonthAveragePercentCleanStreets} \n oyal3m_acceptable_streets: {oyal3m_acceptable_streets} answer= {answer.ThreeMonthAveragePercentCleanStreets - oyal3m_acceptable_streets}")
     
-    answer['PercentAcceptablyCleanStreets'] =answer['PercentAcceptablyCleanStreets'].apply(my_round)
-    answer['PercentFilthyStreets']	 = answer['PercentFilthyStreets'].apply(my_round)
-    answer['PercentAcceptablyCleanSidewalks'] = answer['PercentAcceptablyCleanSidewalks'].apply(my_round)
-    answer['PercentFilthySidewalks'] = answer['PercentFilthySidewalks'].apply(my_round)
-    answer['ChangeInPercentCleanStreetsYearly'] = answer['ChangeInPercentCleanStreetsYearly'].apply(my_round)
-    answer['ChangeInPercentCleanSidewalksYearly'] = answer['ChangeInPercentCleanSidewalksYearly'].apply(my_round)
-    answer['ThreeMonthAveragePercentCleanStreets']	= answer['ThreeMonthAveragePercentCleanStreets'].apply(my_round)
-    answer['ThreeMonthAveragePercentCleanSidewalks'] = answer['ThreeMonthAveragePercentCleanSidewalks'].apply(my_round)
-    answer['ChangeIn3MonthAverageCleanStreets'] = answer['ChangeIn3MonthAverageCleanStreets'].apply(my_round)
-    answer['ChangeIn3MonthAverageCleanSidewalks'] = answer['ChangeIn3MonthAverageCleanSidewalks'].apply(my_round)
+    answer['PercentAcceptablyCleanStreets'] =answer['PercentAcceptablyCleanStreets'].apply(percent_round)
+    answer['PercentFilthyStreets']	 = answer['PercentFilthyStreets'].apply(percent_round)
+    answer['PercentAcceptablyCleanSidewalks'] = answer['PercentAcceptablyCleanSidewalks'].apply(percent_round)
+    answer['PercentFilthySidewalks'] = answer['PercentFilthySidewalks'].apply(percent_round)
+    answer['ChangeInPercentCleanStreetsYearly'] = answer['ChangeInPercentCleanStreetsYearly'].apply(percent_round)
+    answer['ChangeInPercentCleanSidewalksYearly'] = answer['ChangeInPercentCleanSidewalksYearly'].apply(percent_round)
+    answer['ThreeMonthAveragePercentCleanStreets']	= answer['ThreeMonthAveragePercentCleanStreets'].apply(percent_round)
+    answer['ThreeMonthAveragePercentCleanSidewalks'] = answer['ThreeMonthAveragePercentCleanSidewalks'].apply(percent_round)
+    answer['ChangeIn3MonthAverageCleanStreets'] = answer['ChangeIn3MonthAverageCleanStreets'].apply(percent_round)
+    answer['ChangeIn3MonthAverageCleanSidewalks'] = answer['ChangeIn3MonthAverageCleanSidewalks'].apply(percent_round)
     
     #answer.to_csv('boro_answer.csv')
     return answer

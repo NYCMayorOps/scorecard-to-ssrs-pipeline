@@ -6,7 +6,7 @@ from precision import Precision
 
 
 def scorecard_bids_citywide(fd, yyyy, quarter, connector):
-    my_round = Precision.my_round
+    percent_round = Precision.percent_round
     df = scorecard_bids(fd, yyyy, quarter, connector)
     df['bid_id'] = 'Citywide'
     this_agg = df.groupby(['bid_id', 'quarter']).agg(st_acceptable_miles=('streets_acceptable_miles', np.sum),
@@ -16,6 +16,6 @@ def scorecard_bids_citywide(fd, yyyy, quarter, connector):
     this_agg.reset_index(inplace=True)                                                   
     answer = pd.DataFrame()
     answer['quarter'] = this_agg['quarter']
-    answer['percent_acceptably_clean_streets'] = my_round((this_agg.st_acceptable_miles * 100)/ this_agg.linear_miles)
-    answer['percent_acceptably_clean_sidewalks'] =  my_round((this_agg.sw_acceptable_miles * 100)/ this_agg.linear_miles)
+    answer['percent_acceptably_clean_streets'] = ((this_agg.st_acceptable_miles)/ this_agg.linear_miles).apply(percent_round)
+    answer['percent_acceptably_clean_sidewalks'] =  ((this_agg.sw_acceptable_miles)/ this_agg.linear_miles).apply(percent_round)
     return answer

@@ -210,7 +210,9 @@ def merge_district(a, connector):
 
 def final_format(a):
     my_int = Precision().my_int
-    my_round = Precision().my_round
+    percent_round = Precision().percent_round
+    not_percent_round = Precision().not_percent_round
+
     null_answer = pd.DataFrame(columns=['BOROUGH',
                             'DISTRICT',
                             'SECTION',
@@ -237,19 +239,19 @@ def final_format(a):
     df['SECTION'] = a.section_no
     #the month will be determined by query not realitiy
     df['MONTH'] = a['month']
-    df['STREET_RATING_AVG'] = a.st_rate_avg.astype(float).apply(my_round)
+    df['STREET_RATING_AVG'] = (a.st_rate_avg).astype(float).apply(not_percent_round)
     df['STREETS_CNT'] = a.st_count.apply(my_int)
     df['STREETS_ACCEPTABLE_CNT'] = a.streets_acceptable_cnt.apply(my_int)
-    df['STREETS_ACCEPTABLE_MILES'] = a.streets_acceptable_miles.astype(float).apply(my_round)
-    df['STREETS_FILTHY_MILES'] = a.streets_filthy_miles.astype(float).apply(my_round)
+    df['STREETS_ACCEPTABLE_MILES'] = a.streets_acceptable_miles.astype(float).apply(not_percent_round)
+    df['STREETS_FILTHY_MILES'] = a.streets_filthy_miles.astype(float).apply(not_percent_round)
     df['STREETS_FILTHY_CNT'] = a.streets_filthy_cnt.apply(my_int)
-    df['SIDEWALKS_RATING_AVG'] = a.sw_rate_avg.astype(float).apply(my_round)
+    df['SIDEWALKS_RATING_AVG'] = a.sw_rate_avg.astype(float).apply(not_percent_round)
     df['SIDEWALKS_CNT'] = a.sw_count.apply(my_int)
     df['SIDEWALKS_ACCEPTABLE_CNT'] = a.sidewalks_acceptable_cnt.apply(my_int)
-    df['SIDEWALKS_ACCEPTABLE_MILES'] = a.sidewalks_acceptable_miles.astype(float).apply(my_round)
+    df['SIDEWALKS_ACCEPTABLE_MILES'] = a.sidewalks_acceptable_miles.astype(float).apply(not_percent_round)
     df['SIDEWALKS_FILTHY_CNT'] = a.sidewalks_filthy_cnt.apply(my_int)
-    df['SIDEWALKS_FILTHY_MILES'] = a.sidewalks_filthy_miles.astype(float).apply(my_round)
-    df['LINEAR_MILES'] = a.linear_miles.astype(float).apply(my_round)
+    df['SIDEWALKS_FILTHY_MILES'] = a.sidewalks_filthy_miles.astype(float).apply(not_percent_round)
+    df['LINEAR_MILES'] = a.linear_miles.astype(float).apply(not_percent_round)
     #SECTION,MONTH,STREET_RATING_AVG,STREETS_CNT,STREETS_ACCEPTABLE_CNT,STREETS_ACCEPTABLE_MILES,STREETS_FILTHY_MILES,STREETS_FILTHY_CNT,SIDEWALK_RATING_AVG,SIDEWALKS_CNT,SIDEWALKS_ACCEPTABLE_CNT,SIDEWALKS_ACCEPTABLE_MILES,SIDEWALKS_FILTHY_CNT,SIDEWALKS_FILTHY_MILES,LINEAR_MILES,BULK_STREET_RATING_AVG,BULK_SIDEWALK_RATING_AVG,BULK_STREETS_CNT,BULK_SIDEWALKS_CNT
     #df.to_csv("answer.csv")
     return df
