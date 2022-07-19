@@ -6,7 +6,6 @@ from .precision import Precision
 
 
 def scorecard_bids_citywide(fd, yyyy, quarter, connector):
-    precision = Precision().precision
     my_round = Precision.my_round
     df = scorecard_bids(fd, yyyy, quarter, connector)
     df['bid_id'] = 'Citywide'

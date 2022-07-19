@@ -168,13 +168,13 @@ def merge_linear_miles(this_agg, connector):
 def rating_calculation(a):
     if len(a.index) == 0:
         logging.warn('where is input for rating calculation?')
-    a['street_rating_average'] = a['st_rate_avg'].astype(float).apply(my_round)
-    nullif = Precision.my_int
+    a['street_rating_average'] = a['st_rate_avg'].astype(float)
+    my_int = Precision.my_int
     #in sql, you would check if the st_count_rated was null by dividing count rated by count rated.
     #if count_rated is None, none times accept = none.
     #lambda nullif turns 0 to None.
-    a.st_count_rated = a.st_count_rated.apply(nullif)
-    a.sw_count_rated = a.sw_count_rated.apply(nullif)
+    a.st_count_rated = a.st_count_rated.apply(my_int)
+    a.sw_count_rated = a.sw_count_rated.apply(my_int)
     a.linear_miles = a.linear_miles.astype(float)
 
     a['streets_acceptable_cnt'] = (((a.st_count_rated) / a.st_count_rated) * a.st_count_accept)
