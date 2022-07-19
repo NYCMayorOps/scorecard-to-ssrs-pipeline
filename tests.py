@@ -84,6 +84,6 @@ class TestClass(unittest.TestCase):
         pd.testing.assert_frame_equal(expected, actual, check_exact=False, rtol=0.01)
         print("test_percent_clean_scores_citywide passed")
   
-def run_tests():
+if __name__ == '__main__':
     unittest.main()
-    print("unit tests all passed")
+    print("UNIT TESTS PASS")
