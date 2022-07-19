@@ -8,7 +8,7 @@ from pandas import testing
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import logging
-from .precision import Precision
+from precision import Precision
 
 #pd.options.mode.chained_assignment = 'warn'
 precision = Precision().precision

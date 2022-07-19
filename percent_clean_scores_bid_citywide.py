@@ -1,7 +1,7 @@
 import pandas as pd
-from .percent_clean_scores_bid import scorecard_bids
+from percent_clean_scores_bid import scorecard_bids
 import numpy as np
-from .precision import Precision
+from precision import Precision
 
 
 

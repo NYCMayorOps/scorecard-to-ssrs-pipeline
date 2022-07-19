@@ -1,8 +1,8 @@
-from . import percent_clean_scores_section as pcss
+import percent_clean_scores_section as pcss
 import pandas as pd
 import numpy as np
-from .connector import Connector
-from .precision import Precision
+from connector import Connector
+from precision import Precision
 
 pad_month= lambda x: str(x) if (len(str(int(x))) == 2) else '0' + str(int(x))
 

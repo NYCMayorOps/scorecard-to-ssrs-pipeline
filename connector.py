@@ -10,9 +10,9 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from pathlib import Path
 
-#dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
-#load_dotenv(dotenv_path=dotenv_path)
-from airflow.models import Variable
+dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
+load_dotenv(dotenv_path=dotenv_path)
+#from airflow.models import Variable
 
 
 class Connector:
@@ -28,7 +28,8 @@ class Connector:
 
 
     def __init__(self):
-        self.reporting_root =  Variable.get("reporting_root")
+        #self.reporting_root =  Variable.get("reporting_root")
+        self.reporting_root = os.getenv('REPORTING_ROOT')
         self.conn = self.db_connect()
         print("connected to db")
         self.fd = self.get_fd_last_2_years()
@@ -42,7 +43,8 @@ class Connector:
         print("connection initialized")
 
     def db_connect(self):
-        connection_string = Variable.get("CONNECTION_STRING_SQL_ALCHEMY")
+        #connection_string = Variable.get("CONNECTION_STRING_SQL_ALCHEMY")
+        connection_string = os.getenv('CONNECTION_STRING_SQL_ALCHEMY')
         conn_str=connection_string
         #print(conn_str)
         return create_engine(conn_str)

@@ -1,25 +1,29 @@
+import os
 from unittest.mock import patch, Mock
 import unittest
 import pandas as pd
-from airflow.models import Variable
-from .percent_clean_scores_section import scorecard_sections
-from .percent_clean_scores_district import scorecard_districts
-from .percent_clean_scores_boro import scorecard_boros, scorecard_citywide
-from .percent_clean_scores_bid import scorecard_bids
-from .percent_clean_scores_bid_citywide import scorecard_bids_citywide
-from .connector import Connector
+#from airflow.models import Variable
+from percent_clean_scores_section import scorecard_sections
+from percent_clean_scores_district import scorecard_districts
+from percent_clean_scores_boro import scorecard_boros, scorecard_citywide
+from percent_clean_scores_bid import scorecard_bids
+from percent_clean_scores_bid_citywide import scorecard_bids_citywide
+from connector import Connector
 from pathlib import Path
 
 print("############################################################")
 
+from dotenv import load_dotenv
+load_dotenv('c:\\Users\\sscott1\\secrets\\.env')
 
 
 class TestClass(unittest.TestCase):
 
     connector = Connector()
     fd_mock = connector.ryan_filter(connector.fd_mock)
-    reporting_root = Variable.get('reporting_root')
-    
+    #reporting_root = Variable.get('reporting_root')
+    reporting_root = os.getenv('REPORTING_ROOT')
+
     def test_connection(self):
         assert len(self.connector.fd) > 2
         assert len(self.connector.linear_miles) > 2
