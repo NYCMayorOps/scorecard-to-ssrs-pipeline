@@ -10,9 +10,8 @@ from dateutil.relativedelta import relativedelta
 import logging
 from .precision import Precision
 
-precision = Precision().precision
 #pd.options.mode.chained_assignment = 'warn'
-
+precision = Precision().precision
 #formerly know as scout_v2_fulcrum_export_cpr in SQL
 def scorecard_sections(fd, yyyy, mm, connector, is_one_month=True,):
     #print(f"fulcrum data info:")
@@ -85,9 +84,9 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, connector, end_year=None, end_
     fd['street_2'] = fd['street_2'].apply(null_if_five)
     fd['street_3'] = fd['street_3'].apply(null_if_five)
     fd['street_4'] = fd['street_4'].apply(null_if_five)
-    fd['sidewalk_1'] = fd['sidewalk_1'].apply(null_if_five) 
-    fd['sidewalk_2'] = fd['sidewalk_2'].apply(null_if_five) 
-    fd['sidewalk_3'] = fd['sidewalk_3'].apply(null_if_five) 
+    fd['sidewalk_1'] = fd['sidewalk_1'].apply(null_if_five)
+    fd['sidewalk_2'] = fd['sidewalk_2'].apply(null_if_five)
+    fd['sidewalk_3'] = fd['sidewalk_3'].apply(null_if_five)
     fd['sidewalk_4'] = fd['sidewalk_4'].apply(null_if_five)
     fd_copy = fd.copy()
 
@@ -147,7 +146,7 @@ def aggregate(fd):
     this_agg['sw_count_rated'] = this_agg['sw_count_rated'].apply(nullif)
     return this_agg
 
-def merge_linear_miles(this_agg, connector):  
+def merge_linear_miles(this_agg, connector):
     if len(this_agg.index) == 0:
         pass
         #return this_agg
@@ -172,9 +171,9 @@ def rating_calculation(a):
     a['street_rating_average'] = a['st_rate_avg'].astype(float).round(precision)
     nullif = lambda x: x if x > 0 else np.nan 
     #in sql, you would check if the st_count_rated was null by dividing count rated by count rated.
-    #if count_rated is None, none times accept = none. 
+    #if count_rated is None, none times accept = none.
     #lambda nullif turns 0 to None.
-    a.st_count_rated = a.st_count_rated.apply(nullif) 
+    a.st_count_rated = a.st_count_rated.apply(nullif)
     a.sw_count_rated = a.sw_count_rated.apply(nullif)
     a.linear_miles = a.linear_miles.astype(float)
 
@@ -206,18 +205,17 @@ def merge_district(a, connector):
     #a.to_csv('merge_districts.csv')
     return a
 
-lambda_int = lambda x: int(x) if (type(x) == float or type(x) == int) and np.isnan(x) == False else np.nan
-
+lambda_int = Precision().lambda_int
 
 
 def final_format(a):
-    precision = Precision().precision
-    null_answer = pd.DataFrame(columns=['BOROUGH', 
-                            'DISTRICT', 
-                            'SECTION', 
-                            'MONTH', 
-                            'STREET_RATING_AVG', 
-                            'STREETS_CNT', 
+    
+    null_answer = pd.DataFrame(columns=['BOROUGH',
+                            'DISTRICT',
+                            'SECTION',
+                            'MONTH',
+                            'STREET_RATING_AVG',
+                            'STREETS_CNT',
                             'STREETS_ACCEPTABLE_CNT',
                             'STREETS_ACCEPTABLE_MILES',
                             'STREETS_FILTHY_CNT',

@@ -103,11 +103,13 @@ lambda_int = lambda x: int(x) if (type(x) == float or type(x) == int) and np.isn
 
 #bids only recorded after 11-2021
 def cleanup(a, yyyy, quarter):
-    precision = Precision().precision
+    my_round = Precision.my_round
+    lambda_int = Precision.lambda_int
+    precision = Precision.precision
     df = pd.DataFrame()
     df['bid_name'] = a.bid_human_name
     df['quarter'] = str(yyyy) + 'Q' + str(quarter)
-    df['street_rating_avg'] = a.street_rating_average.astype(float).round(precision) 
+    df['street_rating_avg'] = my_round(a.street_rating_average.astype(float))
     df['streets_cnt'] = a.st_count.apply(lambda_int)
     df['streets_acceptable_cnt'] = a.st_count_accept.apply(lambda_int)
     df['streets_acceptable_miles'] = a.streets_acceptable_miles.astype(float).round(precision)
@@ -121,5 +123,5 @@ def cleanup(a, yyyy, quarter):
     df['sidewalks_filthy_miles'] = a.sidewalks_filthy_miles.astype(float).round(precision)
     df['linear_miles'] = a.linear_miles.astype(float).round(precision)
     df['percent_acceptably_clean_streets'] = (( a.streets_acceptable_miles * 100) / a.linear_miles).astype(float).round(precision)
-    df['percent_acceptably_clean_sidewalks'] = ((a.sidewalks_acceptable_miles * 100)/ a.linear_miles).astype(float).round(precision) 
+    df['percent_acceptably_clean_sidewalks'] = ((a.sidewalks_acceptable_miles * 100)/ a.linear_miles).astype(float).round(precision)
     return df                                        
