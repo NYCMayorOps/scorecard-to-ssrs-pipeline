@@ -1,5 +1,5 @@
 #from . import percent_clean_scores_section as pcss
-import percent_clean_score_section as pcss
+import percent_clean_scores_section as pcss
 import pandas as pd
 import numpy as np
 #from .connector import Connector
