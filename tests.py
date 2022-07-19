@@ -2,7 +2,7 @@ import os
 from unittest.mock import patch, Mock
 import unittest
 import pandas as pd
-#from airflow.models import Variable
+from airflow.models import Variable
 from percent_clean_scores_section import scorecard_sections
 from percent_clean_scores_district import scorecard_districts
 from percent_clean_scores_boro import scorecard_boros, scorecard_citywide
@@ -21,8 +21,8 @@ class TestClass(unittest.TestCase):
 
     connector = Connector()
     fd_mock = connector.ryan_filter(connector.fd_mock)
-    #reporting_root = Variable.get('reporting_root')
-    reporting_root = os.getenv('REPORTING_ROOT')
+    reporting_root = Variable.get('reporting_root')
+    #reporting_root = os.getenv('REPORTING_ROOT')
 
     def test_connection(self):
         assert len(self.connector.fd) > 2
