@@ -276,7 +276,7 @@ def execute():
 
  
     start_year = 2021
-    end_year = 2025
+    end_year = today.year
 
     answer = bulk_bids(fd_all, start_year, end_year, connector)
     #answer.to_csv(f"bulk_convert_bids-{drop_text}-{answer.quarter.min()}_to_{answer.quarter.max()}.csv", index=False)
