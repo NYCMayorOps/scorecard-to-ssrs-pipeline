@@ -1,4 +1,5 @@
-
+import os
+import platform
 from calendar import month
 from itertools import count
 import pandas as pd
@@ -8,7 +9,11 @@ from pandas import testing
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import logging
-from .precision import Precision
+
+if platform.system() == 'Windows':
+    from precision import Precision
+else:
+    from .precision import Precision
 
 #pd.options.mode.chained_assignment = 'warn'
 precision = Precision().precision

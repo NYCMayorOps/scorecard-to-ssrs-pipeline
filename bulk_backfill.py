@@ -1,20 +1,8 @@
 import os
-import pandas as pd
-#for airflow
-from . import percent_clean_scores_section as pcss
-from . import percent_clean_scores_district as pcsd
-from . import percent_clean_scores_bid as pcsbid
-from . import percent_clean_scores_bid_citywide as pcsbidc
-from . import percent_clean_scores_boro as pcsb
 import platform
-#for windows
-#import percent_clean_scores_section as pcss
-#import percent_clean_scores_district as pcsd
-#import percent_clean_scores_bid as pcsbid
-#import percent_clean_scores_bid_citywide as pcsbidc
-#import percent_clean_scores_boro as pcsb
+import pandas as pd
 from datetime import datetime
-from .connector import Connector
+
 #from connector import Connector
 from dotenv import load_dotenv
 from pathlib import Path
@@ -23,9 +11,22 @@ if platform.system() == 'Windows':
     dotenv_path = Path( f'c:\\Users\\{os.getlogin()}\\secrets\\.env')
     reporting_root = os.getenv('REPORTING_ROOT')
     load_dotenv(dotenv_path=dotenv_path)
-    
-from airflow.models import Variable
-reporting_root = Variable.get('reporting_root')
+    import percent_clean_scores_section as pcss
+    import percent_clean_scores_district as pcsd
+    import percent_clean_scores_bid as pcsbid
+    import percent_clean_scores_bid_citywide as pcsbidc
+    import percent_clean_scores_boro as pcsb
+    from connector import Connector
+
+else:
+    from . import percent_clean_scores_section as pcss
+    from . import percent_clean_scores_district as pcsd
+    from . import percent_clean_scores_bid as pcsbid
+    from . import percent_clean_scores_bid_citywide as pcsbidc
+    from . import percent_clean_scores_boro as pcsb
+    from .connector import Connector
+    from airflow.models import Variable
+    reporting_root = Variable.get('reporting_root')
 
 def bulk_blockfaces(fd, start_year, start_month, end_year, end_month, connector):
     blockfaces = pcss.load_fulcrum_data(fd, start_year, start_month, False, connector, end_year, end_month )

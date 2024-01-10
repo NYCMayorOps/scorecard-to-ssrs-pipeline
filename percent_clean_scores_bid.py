@@ -1,11 +1,16 @@
+import platform
 import pandas as pd
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from . import percent_clean_scores_section as pcss
 import numpy as np
 import logging
-from .precision import Precision
 
+if platform.system() == 'Windows':
+    import percent_clean_scores_section as pcss
+    from precision import Precision
+else: 
+    from .precision import Precision
+    from . import percent_clean_scores_section as pcss
 precision = Precision().precision
 #bids only recorded after 11-2021
 #

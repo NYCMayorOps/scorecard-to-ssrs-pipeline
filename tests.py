@@ -2,27 +2,39 @@ import os
 from unittest.mock import patch, Mock
 import unittest
 import pandas as pd
-from airflow.models import Variable
-from percent_clean_scores_section import scorecard_sections
-from percent_clean_scores_district import scorecard_districts
-from percent_clean_scores_boro import scorecard_boros, scorecard_citywide
-from percent_clean_scores_bid import scorecard_bids
-from percent_clean_scores_bid_citywide import scorecard_bids_citywide
+import platform
+
+
 from connector import Connector
 from pathlib import Path
 
 print("############################################################")
+if platform.system() == 'Windows':
+    from dotenv import load_dotenv
+    load_dotenv(f'c:\\Users\\{os.getlogin()}\\secrets\\.env')
+    reporting_root = os.getenv('REPORTING_ROOT')
+    from percent_clean_scores_section import scorecard_sections
+    from percent_clean_scores_district import scorecard_districts
+    from percent_clean_scores_boro import scorecard_boros, scorecard_citywide
+    from percent_clean_scores_bid import scorecard_bids
+    from percent_clean_scores_bid_citywide import scorecard_bids_citywide
 
-from dotenv import load_dotenv
-load_dotenv('c:\\Users\\sscott1\\secrets\\.env')
+else:
+    from airflow.models import Variable
+    reporting_root = Variable.get('reporting_root')
+    from . import percent_clean_scores_section as pcss
+    from . import percent_clean_scores_district as pcsd
+    from . import percent_clean_scores_bid as pcsbid
+    from . import percent_clean_scores_bid_citywide as pcsbidc
+    from . import percent_clean_scores_boro as pcsb
 
 
 class TestClass(unittest.TestCase):
-
     connector = Connector()
     fd_mock = connector.ryan_filter(connector.fd_mock)
-    reporting_root = Variable.get('reporting_root')
-    #reporting_root = os.getenv('REPORTING_ROOT')
+
+    def setUp(self):
+        self.reporting_root = reporting_root
 
     def test_connection(self):
         assert len(self.connector.fd) > 2

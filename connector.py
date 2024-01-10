@@ -1,6 +1,7 @@
 import os
 import pyodbc
 import pandas as pd
+import platform
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, \
      ForeignKey, event
 from sqlalchemy.orm import scoped_session, sessionmaker, backref, relation
@@ -12,7 +13,13 @@ from pathlib import Path
 
 #dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
 #load_dotenv(dotenv_path=dotenv_path)
-from airflow.models import Variable
+
+if platform.system() == 'Windows':
+    from dotenv import load_dotenv
+    load_dotenv(f'c:\\Users\\{os.getlogin()}\\secrets\\.env')
+
+else:
+    from airflow.models import Variable
 
 
 class Connector:
@@ -28,7 +35,12 @@ class Connector:
 
 
     def __init__(self):
-        self.reporting_root =  Variable.get("reporting_root")
+        if platform.system() == 'Windows':
+            dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
+            load_dotenv(dotenv_path=dotenv_path)
+            self.reporting_root = os.getenv('REPORTING_ROOT')
+        else: 
+            self.reporting_root =  Variable.get("reporting_root")
         #self.reporting_root = os.getenv('REPORTING_ROOT')
         self.conn = self.db_connect()
         print("connected to db")
@@ -43,8 +55,10 @@ class Connector:
         print("connection initialized")
 
     def db_connect(self):
-        connection_string = Variable.get("CONNECTION_STRING_SQL_ALCHEMY")
-        #connection_string = os.getenv('CONNECTION_STRING_SQL_ALCHEMY')
+        if platform.system() == 'Windows':
+            connection_string = os.getenv('CONNECTION_STRING_SQL_ALCHEMY')
+        else:
+            connection_string = Variable.get("CONNECTION_STRING_SQL_ALCHEMY")
         conn_str=connection_string
         #print(conn_str)
         return create_engine(conn_str)

@@ -1,11 +1,18 @@
-#from . import percent_clean_scores_section as pcss
-from . import percent_clean_scores_section as pcss
+import platform
 import pandas as pd
 import numpy as np
-from .connector import Connector
-from .precision import Precision
-#from connector import Connector
-#from precision import Precision
+
+
+if platform.system() == 'Windows':
+    from connector import Connector
+    from precision import Precision
+    import percent_clean_scores_section as pcss
+
+else:
+    from .connector import Connector
+    from .precision import Precision
+    from . import percent_clean_scores_section as pcss
+
 
 pad_month= lambda x: str(x) if (len(str(int(x))) == 2) else '0' + str(int(x))
 
