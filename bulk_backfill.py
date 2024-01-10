@@ -18,14 +18,20 @@ from .connector import Connector
 from dotenv import load_dotenv
 from pathlib import Path
 
-dotenv_path = Path( 'c:\\Users\\sscott1\\secrets\\.env')
+if platform.system() == 'Windows':
+    dotenv_path = Path( f'c:\\Users\\{os.getlogin()}\\secrets\\.env')
+    reporting_root = os.getenv('REPORTING_ROOT')
+
 load_dotenv(dotenv_path=dotenv_path)
 from airflow.models import Variable
 reporting_root = Variable.get('reporting_root')
-#reporting_root = os.getenv('REPORTING_ROOT')
-def bulk_sections(fd, start_year, start_month, end_year, end_month, connector):
-    fd = pcss.load_fulcrum_data(fd, start_year, start_month, False, connector, end_year, end_month )
-    this_agg = pcss.aggregate(fd)
+
+def bulk_blockfaces(fd, start_year, start_month, end_year, end_month, connector):
+    blockfaces = pcss.load_fulcrum_data(fd, start_year, start_month, False, connector, end_year, end_month )
+    return blockfaces
+
+def bulk_sections(blockfaces, connector):
+    this_agg = pcss.aggregate(blockfaces)
     a = pcss.merge_linear_miles(this_agg, connector)
     a = pcss.rating_calculation(a)
     a = pcss.merge_district(a, connector)
@@ -254,6 +260,13 @@ def execute():
         drop_text = "no_drop"
     print(drop_text)
 
+    answer = bulk_blockfaces(fd_all, start_year, start_month, end_year, end_month, connector)
+    #answer.to_csv(f"bulk_convert_sections-{drop_text}-{answer.MONTH.min()}_to_{answer.MONTH.max()}.csv", index=False)
+    answer.to_sql('ResultBlockfaces',connector.conn, if_exists='replace')
+
+    answer = bulk_sections(answer, connector)
+    answer.to_sql('ResultSections', connector.conn, if_exists='replace')
+
     answer = bulk_citywide(fd_all, start_year, start_month, end_year, end_month, connector)
     #answer.to_csv(f"bulk_convert_citywide-{drop_text}-{answer.Month.min()}_to_{answer.Month.max()}.csv", index=False)
     #answer.to_csv(Path(os.getenv('MAYOR_DASHBOARD_ROOT')) / 'output' / 'scorecard' / f'scorecard_citywide_backfill-{drop_text}.csv', index=False)
@@ -267,13 +280,6 @@ def execute():
     answer = bulk_districts(fd_all, start_year, start_month, end_year, end_month, connector)
     #answer.to_csv(f"bulk_convert_districts-{drop_text}-{answer.Month.min()}_to_{answer.Month.max()}.csv", index=False )
     answer.to_sql('ResultDistrict',connector.conn, if_exists='replace')
-    
-    answer = bulk_sections(fd_all, start_year, start_month, end_year, end_month, connector)
-    #answer.to_csv(f"bulk_convert_sections-{drop_text}-{answer.MONTH.min()}_to_{answer.MONTH.max()}.csv", index=False)
-    answer.to_sql('ResultSection',connector.conn, if_exists='replace')
-
-   
-
  
     start_year = 2021
     end_year = 2022

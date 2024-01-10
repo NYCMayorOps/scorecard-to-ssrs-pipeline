@@ -21,8 +21,16 @@ def scorecard_sections(fd, yyyy, mm, connector, is_one_month=True,):
     a = merge_linear_miles(this_agg, connector)
     a = rating_calculation(a)
     a = merge_district(a, connector)
-    answer = final_format(a)
-    return answer
+    result_section = final_format(a)
+    if is_one_month:
+        return result_section
+    else:
+        historic_result_section=connector.get_historic_result_section()
+        result_section_all_time = pd.concat([result_section, historic_result_section)])
+
+        # Drop any duplicate rows based on the date and section columns
+        result_section_all_time = result_section_all_time.drop_duplicates(subset=['MONTH', 'SECTION'])
+        return result_section_all_time
 #for multimonth
 
 

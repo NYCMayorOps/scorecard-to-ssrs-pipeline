@@ -50,7 +50,7 @@ class Connector:
         return create_engine(conn_str)
 
     def test_fulcrum_data(self):
-        df = pd.read_sql('SELECT TOP(5) * FROM [dbo].[Fulcrum_Data]', self.conn)
+        df = pd.read_sql('SELECT TOP(5) * FROM [dbo].[Fulcrum_Data];', self.conn)
         #print(df.info())
     
     #read past two years into fulcrum data
@@ -72,7 +72,8 @@ class Connector:
     #get districts
     def get_district(self):
         return pd.read_sql(f"SELECT * FROM [dbo].[District];", self.conn)
-
+    def get_historic_result_section(self):
+        return pd.read_sql(f"SELECT * FROM [dbo].[OldAndNewResultSection];", self.conn)
     def set_string(self, df, key_list):
         '''
         SET val = @val WHERE [key] = @key;
