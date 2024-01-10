@@ -106,6 +106,18 @@ class Connector:
             self.conn.execute(f'''''')
     
     def ryan_filter(self, fd):
+        """
+        A function to enforce that the updated date is within the currentmonth and currentyear field. 
+        They should not contradict.
+        If they contradict, this filter will remove the records from the aggregation.
+        No data will be removed from the original Fulcrum Data. It is always read-only.
+        If a row is mismatched, the omission will be logged.
+        input: 
+          fd: a fulcrum data dataframe. All the years and schemas are chained together to form the biggest fd dataframe possible.
+        
+        returns: a filtered fulcrum data dataframe (fd)
+        """
+          
         fd['my_date2'] = pd.to_datetime(fd['_updated_at'], format='%Y-%m-%d %H:%M:%S')
         fd_copy = fd.copy()
         my_filter = []
@@ -125,11 +137,11 @@ class Connector:
         prod_copy = prod_copy.drop('my_date2', axis=1)
         #prod_copy.to_csv('fd_prod_copy.csv')
         ####
-        if self.delete_if_months_do_not_match:
+        if self.delete_if_months_do_not_match: #You can turn this deletion off if you want.
             print(f"{i} rows deleted \n of {j} rows; \n that is {i / j} percent.")
             fd = fd[my_filter]
         else:
-            print(f"this run preserves all {j} rows of fuclcrum data.")
+            print(f"this run preserves all {j} rows of fuclcrum data, even if there is a mismatch between current yearn/month and updated_at")
         fd.reset_index(drop=True, inplace=True)     
         fd = fd.copy()
         #print(fd.info())
