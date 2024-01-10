@@ -22,8 +22,8 @@ from pathlib import Path
 if platform.system() == 'Windows':
     dotenv_path = Path( f'c:\\Users\\{os.getlogin()}\\secrets\\.env')
     reporting_root = os.getenv('REPORTING_ROOT')
-
-load_dotenv(dotenv_path=dotenv_path)
+    load_dotenv(dotenv_path=dotenv_path)
+    
 from airflow.models import Variable
 reporting_root = Variable.get('reporting_root')
 
