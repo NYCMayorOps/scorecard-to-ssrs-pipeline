@@ -3,3 +3,4 @@ fd-2021-11-present.csv
 .env
 __pycache__
 __pycache__/
+.pyc
