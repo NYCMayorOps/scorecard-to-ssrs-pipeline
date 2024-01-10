@@ -6,6 +6,7 @@ from . import percent_clean_scores_district as pcsd
 from . import percent_clean_scores_bid as pcsbid
 from . import percent_clean_scores_bid_citywide as pcsbidc
 from . import percent_clean_scores_boro as pcsb
+import platform
 #for windows
 #import percent_clean_scores_section as pcss
 #import percent_clean_scores_district as pcsd
