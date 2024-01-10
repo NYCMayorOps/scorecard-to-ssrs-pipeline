@@ -25,12 +25,20 @@ def scorecard_sections(fd, yyyy, mm, connector, is_one_month=True,):
     if is_one_month:
         return result_section
     else:
+        '''
+        ready to implement.
+        #get historic result section and append it to the results from fulcrum data.
+        
         historic_result_section=connector.get_historic_result_section()
         result_section_all_time = pd.concat([result_section, historic_result_section])
 
-        # Drop any duplicate rows based on the date and section columns
+        #there will be duplicates from the historic data. Drop duplicates.
         result_section_all_time = result_section_all_time.drop_duplicates(subset=['MONTH', 'SECTION'])
         return result_section_all_time
+        '''
+        return result_section
+        # Drop any duplicate rows based on the date and section columns
+        
 #for multimonth
 
 
