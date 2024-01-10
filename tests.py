@@ -11,7 +11,7 @@ from pathlib import Path
 print("############################################################")
 if platform.system() == 'Windows':
     from dotenv import load_dotenv
-    load_dotenv(f'c:\\Users\\{os.getlogin()}\\secrets\\.env')
+    load_dotenv(f"c:\\Users\\{os.getlogin()}\\secrets\\.env")
     reporting_root = os.getenv('REPORTING_ROOT')
     from percent_clean_scores_section import scorecard_sections
     from percent_clean_scores_district import scorecard_districts
