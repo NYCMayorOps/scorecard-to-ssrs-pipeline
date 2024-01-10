@@ -26,7 +26,7 @@ def scorecard_sections(fd, yyyy, mm, connector, is_one_month=True,):
         return result_section
     else:
         historic_result_section=connector.get_historic_result_section()
-        result_section_all_time = pd.concat([result_section, historic_result_section)])
+        result_section_all_time = pd.concat([result_section, historic_result_section])
 
         # Drop any duplicate rows based on the date and section columns
         result_section_all_time = result_section_all_time.drop_duplicates(subset=['MONTH', 'SECTION'])
@@ -45,6 +45,7 @@ def mean_calc(one, two, three, four):
     
 def load_fulcrum_data(fd, yyyy, mm, is_one_month, connector, end_year=None, end_month=None):
     #fd for fulcrum data, same as sql
+    #you are passing fulcrum data into function that loads fulcrum data?
     #print(fd.info())
     #### before we do anything, lets make sure the _updated_date is the same as the created_date
     

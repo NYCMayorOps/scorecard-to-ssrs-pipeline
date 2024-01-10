@@ -32,7 +32,7 @@ class Connector:
         #self.reporting_root = os.getenv('REPORTING_ROOT')
         self.conn = self.db_connect()
         print("connected to db")
-        self.fd = self.get_fd_last_2_years()
+        self.fd = self.get_fd_from_11_2021()
         self.linear_miles = self.get_linear_miles()
         assert (self.linear_miles.empty == False)
         self.bid_linear_miles = self.get_bid_linear_miles()
@@ -54,9 +54,10 @@ class Connector:
         #print(df.info())
     
     #read past two years into fulcrum data
-    def get_fd_last_2_years(self):
-        two_years_ago = datetime.now() - relativedelta(years=2)
-        return  pd.read_sql(f"SELECT * FROM [dbo].[Fulcrum_Data] WHERE [_created_at] >= PARSE('{two_years_ago}' AS DATETIME);", self.conn)
+    #this is a problem. We need data to go back to 11/2019, not two years ago.
+    def get_fd_from_11_2021(self):
+        nov_2021 = datetime(2021, 11, 1)
+        return  pd.read_sql(f"SELECT * FROM [dbo].[Fulcrum_Data] WHERE [_created_at] >= PARSE('{nov_2021}' AS DATETIME);", self.conn)
 
     #get linear miles
     def get_linear_miles(self):
@@ -72,8 +73,10 @@ class Connector:
     #get districts
     def get_district(self):
         return pd.read_sql(f"SELECT * FROM [dbo].[District];", self.conn)
+    
     def get_historic_result_section(self):
         return pd.read_sql(f"SELECT * FROM [dbo].[OldAndNewResultSection];", self.conn)
+    
     def set_string(self, df, key_list):
         '''
         SET val = @val WHERE [key] = @key;
