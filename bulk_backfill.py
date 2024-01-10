@@ -137,6 +137,7 @@ def execute():
     
    
     scorecard1 = pd.merge(scorecard1, crosswalk, how='inner', on='bds_join_on' )
+    crosswalk = None
     #print("scorecard1:")
     #print(scorecard1.info())
     scorecard1_xform = pd.DataFrame()
@@ -177,6 +178,7 @@ def execute():
 
     scorecard2 = connector.fd
     scorecard_both = pd.concat([scorecard1_xform, scorecard2], ignore_index=True )
+    scorecard1_xform, scorecard2 = None, None
     scorecard_irm= pd.read_csv(Path(reporting_root) / 'fulcrum_irm_2017_to_2019.csv')
     
     ###scorecard irm
@@ -246,6 +248,7 @@ def execute():
     #print("##### answer #####")
     fd_all = pd.concat([scorecard_irm_xform, scorecard_both], ignore_index=True )
     #fd_all.to_csv('fd_all.csv')
+    scorecard_irm_xform, scorecard_both = None, None
     #the filter adds the my_date2 column.
     fd_all = connector.ryan_filter(fd_all)
     start_month=1
