@@ -9,7 +9,9 @@ from pathlib import Path
 
 if platform.system() == 'Windows':
     dotenv_path = Path( f'c:\\Users\\{os.getlogin()}\\secrets\\.env')
+    load_dotenv(dotenv_path=dotenv_path)
     reporting_root = os.getenv('REPORTING_ROOT')
+    assert reporting_root is not None
     load_dotenv(dotenv_path=dotenv_path)
     import percent_clean_scores_section as pcss
     import percent_clean_scores_district as pcsd
@@ -28,7 +30,7 @@ else:
     from airflow.models import Variable
     reporting_root = Variable.get('reporting_root')
 
-def bulk_blockfaces(fd, start_year, start_month, end_year, end_month, connector):
+def bulk_blockfaces(fd, start_year, start_month, end_year, end_month, connector) -> pd.DataFrame:
     blockfaces = pcss.load_fulcrum_data(fd, start_year, start_month, False, connector, end_year, end_month )
     return blockfaces
 
@@ -265,26 +267,31 @@ def execute():
         drop_text = "no_drop"
     print(drop_text)
 
-    answer = bulk_blockfaces(fd_all, start_year, start_month, end_year, end_month, connector)
+    fd_all = bulk_blockfaces(fd_all, start_year, start_month, end_year, end_month, connector)
     #answer.to_csv(f"bulk_convert_sections-{drop_text}-{answer.MONTH.min()}_to_{answer.MONTH.max()}.csv", index=False)
-    answer.to_sql('ResultBlockfaces',connector.conn, if_exists='replace')
+    #fd_all.to_sql('ResultBlockface',connector.conn, if_exists='replace')
+    dry_run = True
+    answer = bulk_sections(fd_all, connector)
+    if not dry_run:
+        answer.to_sql('ResultSection',connector.conn, if_exists='replace')
 
-    answer = bulk_sections(answer, connector)
-    answer.to_sql('ResultSections', connector.conn, if_exists='replace')
 
     answer = bulk_citywide(fd_all, start_year, start_month, end_year, end_month, connector)
     #answer.to_csv(f"bulk_convert_citywide-{drop_text}-{answer.Month.min()}_to_{answer.Month.max()}.csv", index=False)
     #answer.to_csv(Path(os.getenv('MAYOR_DASHBOARD_ROOT')) / 'output' / 'scorecard' / f'scorecard_citywide_backfill-{drop_text}.csv', index=False)
-    answer.to_sql('ResultCitywide',connector.conn, if_exists='replace')
+    if not dry_run:
+        answer.to_sql('ResultCitywide',connector.conn, if_exists='replace')
     #bids not available before 11-2021
 
     answer = bulk_boros(fd_all, start_year, start_month, end_year, end_month, connector)
     #answer.to_csv(f"bulk_convert_boro-{drop_text}-{answer.Month.min()}_to_{answer.Month.max()}.csv", index=False)
-    answer.to_sql('ResultBoro',connector.conn, if_exists='replace')
+    if not dry_run:
+        answer.to_sql('ResultBoro',connector.conn, if_exists='replace')
 
     answer = bulk_districts(fd_all, start_year, start_month, end_year, end_month, connector)
     #answer.to_csv(f"bulk_convert_districts-{drop_text}-{answer.Month.min()}_to_{answer.Month.max()}.csv", index=False )
-    answer.to_sql('ResultDistrict',connector.conn, if_exists='replace')
+    if not dry_run:
+        answer.to_sql('ResultDistrict',connector.conn, if_exists='replace')
  
     start_year = 2021
     end_year = today.year
@@ -292,8 +299,14 @@ def execute():
     answer = bulk_bids(fd_all, start_year, end_year, connector)
     #answer.to_csv(f"bulk_convert_bids-{drop_text}-{answer.quarter.min()}_to_{answer.quarter.max()}.csv", index=False)
     #answer.to_csv(Path(os.getenv('MAYOR_DASHBOARD_ROOT')) / 'output' / 'scorecard' / 'scorecard_bids_backfill-{drop_text}.csv', index=False)
-    answer.to_sql('ResultBid',connector.conn, if_exists='replace')
+    if not dry_run:
+        answer.to_sql('ResultBid',connector.conn, if_exists='replace')
 
     answer = bulk_bids_citywide(fd_all, start_year, end_year, connector)
     #answer.to_csv(f"bulk_convert_bids_citywide-{drop_text}-{answer.quarter.min()}_to_{answer.quarter.max()}.csv", index=False)
-    answer.to_sql('ResultBidCitywide',connector.conn, if_exists='replace')
+    if not dry_run:
+        answer.to_sql('ResultBidCitywide',connector.conn, if_exists='replace')
+
+if __name__ == "__main__":
+    execute()
+    print("done.")
