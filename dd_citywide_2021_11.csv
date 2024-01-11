@@ -1,0 +1,2 @@
+Borough,Month,PercentAcceptablyCleanStreets,PercentFilthyStreets,PercentAcceptablyCleanSidewalks,PercentFilthySidewalks,ChangeInPercentCleanStreetsYearly,ChangeInPercentCleanSidewalksYearly,ThreeMonthAveragePercentCleanStreets,ThreeMonthAveragePercentCleanSidewalks,ChangeIn3MonthAverageCleanStreets,ChangeIn3MonthAverageCleanSidewalks
+New York City,202111,91.6,0.0,95.4,	0.0,24.1,27.8,71.2,78.4,19.9,10.6

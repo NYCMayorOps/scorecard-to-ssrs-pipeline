@@ -1,0 +1,75 @@
+﻿bid_name,quarter,street_rating_avg,streets_cnt,streets_acceptable_cnt,streets_acceptable_miles,streets_filthy_cnt,streets_filthy_miles,sidewalk_rating_avg,sidewalks_cnt,sidewalks_acceptable_cnt,sidewalks_acceptable_miles,sidewalks_filthy_cnt,sidewalks_filthy_miles,linear_miles,percent_acceptably_clean_streets,percent_acceptably_clean_sidewalks
+125th Street BID,2022Q1,,,,,,,,,,,,,,,
+14th Street BID,2022Q1,1.305,20,18,5.611,2,0.623,1.235,20,20,6.234,0,0.000,6.234,0.900,1.000
+161st Street BID,2022Q1,,,,,,,,,,,,,,,
+165th Street BID,2022Q1,,,,,,,,,,,,,,,
+180th Street BID,2022Q1,,,,,,,,,,,,,,,
+34th Street BID,2022Q1,1.499,33,17,5.338,8,2.512,1.533,33,13,4.082,10,3.140,10.363,0.515,0.394
+47th Street BID,2022Q1,1.425,3,2,0.540,1,0.270,1.400,3,2,0.540,1,0.270,0.810,0.667,0.667
+5th Avenue BID,2022Q1,1.418,21,12,3.179,0,0.000,1.371,21,13,3.444,0,0.000,5.563,0.571,0.619
+82nd Street BID,2022Q1,,,,,,,,,,,,,,,
+86th Street Bay Ridge BID,2022Q1,,,,,,,,,,,,,,,
+Atlantic Avenue BID,2022Q1,,,,,,,,,,,,,,,
+Bay Ridge 5th Avenue BID,2022Q1,,,,,,,,,,,,,,,
+Bayside Village,2022Q1,,,,,,,,,,,,,,,
+Bed-Stuy Gateway BID,2022Q1,,,,,,,,,,,,,,,
+Belmont BID,2022Q1,,,,,,,,,,,,,,,
+Brighton Beach BID,2022Q1,,,,,,,,,,,,,,,
+Bryant Park BID,2022Q1,1.468,28,12,0.765,5,0.319,1.482,28,11,0.701,6,0.382,1.784,0.429,0.393
+Chinatown,2022Q1,,,,,,,,,,,,,,,
+Church Avenue BID,2022Q1,,,,,,,,,,,,,,,
+Columbus Amsterdam BID,2022Q1,1.387,39,27,5.993,4,0.888,1.407,39,24,5.327,7,1.554,8.657,0.692,0.615
+Columbus Avenue BID,2022Q1,1.585,37,15,3.938,13,3.413,1.598,37,13,3.413,15,3.938,9.715,0.405,0.351
+Court-Livingston-Schermerhorn BID,2022Q1,,,,,,,,,,,,,,,
+Downtown Alliance BID,2022Q1,,,,,,,,,,,,,,,
+Downtown Flushing,2022Q1,,,,,,,,,,,,,,,
+DUMBO,2022Q1,,,,,,,,,,,,,,,
+East Brooklyn BID,2022Q1,,,,,,,,,,,,,,,
+East Mid-Manhattan BID,2022Q1,1.415,18,10,7.016,0,0.000,1.400,18,10,7.016,0,0.000,12.629,0.556,0.556
+Flatbush Avenue BID,2022Q1,,,,,,,,,,,,,,,
+Flatbush-Nostrand Junction BID,2022Q1,,,,,,,,,,,,,,,
+Flatiron/23rd Street Partnership,2022Q1,1.344,62,53,10.938,8,1.651,1.323,61,53,11.117,8,1.678,12.795,0.855,0.869
+Fordham Road BID,2022Q1,,,,,,,,,,,,,,,
+Forest Avenue BID,2022Q1,,,,,,,,,,,,,,,
+Fulton Area Business (FAB) Alliance,2022Q1,,,,,,,,,,,,,,,
+Fulton Mall Improvement Association,2022Q1,,,,,,,,,,,,,,,
+Garment District,2022Q1,1.531,16,7,4.761,4,2.720,1.646,16,4,2.720,8,5.441,10.882,0.438,0.250
+Graham Avenue BID,2022Q1,,,,,,,,,,,,,,,
+Grand Central Partnership,2022Q1,1.416,65,31,9.090,6,1.759,1.408,65,31,9.090,6,1.759,19.059,0.477,0.477
+Grand Street BID,2022Q1,,,,,,,,,,,,,,,
+Greater JFK,2022Q1,,,,,,,,,,,,,,,
+HUB/3rd Avenue BID,2022Q1,,,,,,,,,,,,,,,
+Hudson Square,2022Q1,,,,,,,,,,,,,,,
+Hudson Yards/Hell's Kitchen,2022Q1,,,,,,,,,,,,,,,
+Jamaica Center BID,2022Q1,,,,,,,,,,,,,,,
+Jerome-Gun Hill BID,2022Q1,,,,,,,,,,,,,,,
+Kings Highway BID,2022Q1,,,,,,,,,,,,,,,
+Kingsbridge BID,2022Q1,,,,,,,,,,,,,,,
+Lincoln Square BID,2022Q1,1.513,23,10,3.412,6,2.047,1.482,20,9,3.532,4,1.570,7.848,0.435,0.450
+Long Island City,2022Q1,,,,,,,,,,,,,,,
+Lower East Side BID,2022Q1,,,,,,,,,,,,,,,
+Madison Avenue BID,2022Q1,,,,,,,,,,,,,,,
+Meatpacking BID,2022Q1,,,,,,,,,,,,,,,
+MetroTech BID,2022Q1,,,,,,,,,,,,,,,
+Montague Street BID,2022Q1,,,,,,,,,,,,,,,
+Myrtle Avenue Brooklyn Partnership,2022Q1,,,,,,,,,,,,,,,
+Myrtle Avenue DMA,2022Q1,,,,,,,,,,,,,,,
+New Dorp BID,2022Q1,,,,,,,,,,,,,,,
+NoHo BID,2022Q1,,,,,,,,,,,,,,,
+North Flatbush BID,2022Q1,,,,,,,,,,,,,,,
+Park Slope 5th Avenue BID,2022Q1,,,,,,,,,,,,,,,
+Pitkin Avenue BID,2022Q1,,,,,,,,,,,,,,,
+SoHo Broadway BID,2022Q1,,,,,,,,,,,,,,,
+South Shore BID,2022Q1,,,,,,,,,,,,,,,
+Southern Boulevard BID,2022Q1,,,,,,,,,,,,,,,
+Steinway Street BID,2022Q1,,,,,,,,,,,,,,,
+Sunnyside Shines,2022Q1,,,,,,,,,,,,,,,
+Sunset Park 5th Avenue BID,2022Q1,,,,,,,,,,,,,,,
+Sutphin Boulevard BID,2022Q1,,,,,,,,,,,,,,,
+Times Square BID,2022Q1,1.412,40,28,9.761,9,3.138,1.404,40,26,9.064,10,3.486,13.945,0.700,0.650
+Village Alliance BID,2022Q1,,,,,,,,,,,,,,,
+Washington Heights BID,2022Q1,,,,,,,,,,,,,,,
+West Shore BID,2022Q1,,,,,,,,,,,,,,,
+Westchester Square,2022Q1,,,,,,,,,,,,,,,
+White Plains Road BID,2022Q1,,,,,,,,,,,,,,,
+Woodhaven BID,2022Q1,,,,,,,,,,,,,,,
