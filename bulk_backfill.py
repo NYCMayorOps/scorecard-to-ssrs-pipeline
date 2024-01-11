@@ -272,22 +272,23 @@ def execute():
         drop_text = "no_drop"
     print(drop_text)
 
+
+    dry_run = False
+
     fd_all = bulk_blockfaces(fd_all, start_year, start_month, end_year, end_month, connector)
     #answer.to_csv(f"bulk_convert_sections-{drop_text}-{answer.MONTH.min()}_to_{answer.MONTH.max()}.csv", index=False)
     #fd_all.to_sql('ResultBlockface',connector.conn, if_exists='replace')
-    dry_run = True
+    
     answer = bulk_sections(fd_all, connector)
     if not dry_run:
         answer.to_sql('ResultSection',connector.conn, if_exists='replace')
-
-
+    
     answer = bulk_citywide(fd_all, start_year, start_month, end_year, end_month, connector)
     #answer.to_csv(f"bulk_convert_citywide-{drop_text}-{answer.Month.min()}_to_{answer.Month.max()}.csv", index=False)
     #answer.to_csv(Path(os.getenv('MAYOR_DASHBOARD_ROOT')) / 'output' / 'scorecard' / f'scorecard_citywide_backfill-{drop_text}.csv', index=False)
     if not dry_run:
         answer.to_sql('ResultCitywide',connector.conn, if_exists='replace')
-    #bids not available before 11-2021
-
+    
     answer = bulk_boros(fd_all, start_year, start_month, end_year, end_month, connector)
     #answer.to_csv(f"bulk_convert_boro-{drop_text}-{answer.Month.min()}_to_{answer.Month.max()}.csv", index=False)
     if not dry_run:
@@ -297,7 +298,9 @@ def execute():
     #answer.to_csv(f"bulk_convert_districts-{drop_text}-{answer.Month.min()}_to_{answer.Month.max()}.csv", index=False )
     if not dry_run:
         answer.to_sql('ResultDistrict',connector.conn, if_exists='replace')
- 
+    
+    
+    #bids not available before 11-2021 
     start_year = 2021
     end_year = today.year
 

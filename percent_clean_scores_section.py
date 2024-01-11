@@ -61,6 +61,7 @@ def load_fulcrum_data(fd, yyyy, mm, is_one_month, connector, end_year=None, end_
     #you are passing fulcrum data into function that loads fulcrum data?
     #print(fd.info())
     #### before we do anything, lets make sure the _updated_date is the same as the created_date
+    # my_date2 comes from ryan_filter. It is the _updated_at date.
     
     #have to truncate the day and time from my_date for equality comparison with other datetimes (yyyy-mm).
     fd['my_date'] = fd['my_date2'].apply(lambda x: datetime.strptime(datetime.strftime(x, '%Y-%m'), '%Y-%m'))
@@ -221,7 +222,8 @@ def merge_district(a, connector):
     d['district_no'] = d['District']
     a = a.merge(d, how='left', on='district_no' )
     #need to add month back after merge.
-    month_zero = (a['currentyear'] * 100 + a['currentmonth']).fillna('0')
+    a['currentyear'], a['currentmonth'] = pd.to_numeric(a['currentyear'], errors='coerce'), pd.to_numeric(a['currentmonth'], errors='coerce')
+    month_zero = (a['currentyear'].astype(float) * 100 + a['currentmonth'].astype(float)).fillna('0')
     month_zero_int = month_zero.astype(int)
     a['month'] = month_zero_int.map(lambda x: None if x == 0 else x)
     #a.to_csv('merge_districts.csv')
