@@ -272,7 +272,7 @@ def execute():
         drop_text = "no_drop"
     print(drop_text)
 
-
+    #turn this off to send to production db.
     dry_run = False
 
     fd_all = bulk_blockfaces(fd_all, start_year, start_month, end_year, end_month, connector)
@@ -299,7 +299,7 @@ def execute():
     if not dry_run:
         answer.to_sql('ResultDistrict',connector.conn, if_exists='replace')
     
-    
+
     #bids not available before 11-2021 
     start_year = 2021
     end_year = today.year
