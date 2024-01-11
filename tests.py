@@ -3,8 +3,8 @@ from unittest.mock import patch, Mock
 import unittest
 import pandas as pd
 import platform
-
-
+from bulk_backfill import bulk_blockfaces, bulk_sections
+from datetime import datetime, date
 from connector import Connector
 from pathlib import Path
 
@@ -100,7 +100,31 @@ class TestClass(unittest.TestCase):
         expected.Month = expected.Month.astype(str)
         pd.testing.assert_frame_equal(expected, actual, check_exact=False, rtol=0.01)
         print("test_percent_clean_scores_citywide passed")
-  
+
+    def test_nov_2021(self):
+        #use the real connector
+        connector = Connector()
+        fd : pd.DataFrame= connector.ryan_filter(connector.fd)
+        blockfaces = bulk_blockfaces(fd, 2021, 11, 2024, 1, connector)
+        #print(blockfaces.head())
+        print(blockfaces.info())
+        blockfaces['my_months'] = blockfaces['currentyear'].astype(int).astype(str) + blockfaces['currentmonth'].astype(int).astype(str).str.zfill(2)
+        #print(years)
+        assert date(2021, 11, 2) in blockfaces['_updated_at'].dt.date.unique()
+        print(f"my months")
+        print(blockfaces['my_months'].unique())
+        assert '202111' in blockfaces['my_months'].unique()
+        all_months = blockfaces['_updated_at'].dt.date.astype(str) + blockfaces['my_months']
+        assert("2021-11-02202111" in all_months.unique())
+        sections = bulk_sections(blockfaces, connector)
+        print(sections.info())
+        print("Months: see below")
+        my_months = sections['MONTH'].sort_values().unique()
+        print(my_months)
+        assert 202111 in my_months
+        assert 202112 in my_months
+        assert 202201 in my_months
+          
 if __name__ == '__main__':
     unittest.main()
     print("UNIT TESTS PASS")
