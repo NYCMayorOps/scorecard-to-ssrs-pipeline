@@ -52,7 +52,8 @@ def bulk_districts(fd, start_year, start_month, end_year, end_month, connector):
     for t in pr_tupes:
         #print(f"district: {t[0]}-{t[1]}")
         this_df = pcsd.scorecard_districts(fd, t[0], t[1], connector)
-        df = df.append(this_df, ignore_index=True)
+        #df = df.append(this_df, ignore_index=True)
+        df = pd.concat([df, this_df], ignore_index=True)
     #save output to one file
     return df
 
@@ -78,7 +79,8 @@ def bulk_bids(fd, start_year, end_year, connector):
     for year in range(start_year, end_year + 1):
         for quarter in range(1,5):
             print(f"{year}-Q{quarter}")
-            df = df.append(pcsbid.scorecard_bids(fd, year, quarter, connector))
+            #df = df.append(pcsbid.scorecard_bids(fd, year, quarter, connector))
+            df = pd.concat([df, pcsbid.scorecard_bids(fd, year, quarter, connector)], ignore_index=True)
     return df
 
 def bulk_bids_citywide(fd, start_year, end_year, connector):
@@ -86,7 +88,8 @@ def bulk_bids_citywide(fd, start_year, end_year, connector):
     for year in range(start_year, end_year + 1):
         for quarter in range(1,5):
             print(f"{year}-Q{quarter}")
-            df = df.append(pcsbidc.scorecard_bids_citywide(fd, year, quarter, connector))
+            #df = df.append(pcsbidc.scorecard_bids_citywide(fd, year, quarter, connector))
+            df = pd.concat([df, pcsbidc.scorecard_bids_citywide(fd, year, quarter, connector)], ignore_index=True)
     return df                
 
 
@@ -102,7 +105,8 @@ def bulk_citywide(fd, start_year, start_month, end_year, end_month, connector):
     for t in pr_tupes:
         print(f"citywide: {t[0]}-{t[1]}")
         this_df = pcsb.scorecard_citywide(fd, t[0], t[1], connector)
-        df = df.append(this_df, ignore_index=True)
+        #df = df.append(this_df, ignore_index=True)
+        df = pd.concat([df, this_df], ignore_index=True)
     return df
 
 def bulk_boros(fd, start_year, start_month, end_year, end_month, connector):
@@ -114,7 +118,8 @@ def bulk_boros(fd, start_year, start_month, end_year, end_month, connector):
     for t in pr_tupes:
         print(f"citywide: {t[0]}-{t[1]}")
         this_df = pcsb.scorecard_boros(fd, t[0], t[1], connector)
-        df = df.append(this_df, ignore_index=True)
+        #df = df.append(this_df, ignore_index=True)
+        df = pd.concat([df, this_df], ignore_index=True)
     return df
 
 def execute():
